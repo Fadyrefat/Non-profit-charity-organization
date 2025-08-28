@@ -2,5 +2,5 @@
 
 interface DonationStrategy{
 
-    public function processDonation():void;
+    public function process($donorId,$amount):void;
 }

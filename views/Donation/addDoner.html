@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add New Donor</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 50px; }
+    form { max-width: 400px; padding: 20px; border: 1px solid #ccc; border-radius: 10px; }
+    label { display: block; margin-top: 10px; }
+    input[type="text"], input[type="email"], input[type="tel"] {
+      width: 100%; padding: 8px; margin-top: 5px;
+      border: 1px solid #ccc; border-radius: 5px;
+    }
+    input[type="submit"] {
+      margin-top: 15px; padding: 10px 20px;
+      background: #28a745; color: white;
+      border: none; border-radius: 5px;
+      cursor: pointer;
+    }
+    input[type="submit"]:hover { background: #218838; }
+  </style>
+</head>
+<body>
+
+  <h2>Add New Donor</h2>
+  <form action="index.php?action=addDoner" method="POST">
+    <label for="name">Full Name</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="email">Email Address</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="phone">Phone Number</label>
+    <input type="tel" id="phone" name="phone">
+
+    <input type="submit" value="Add Donor">
+  </form>
+
+</body>
+</html>
