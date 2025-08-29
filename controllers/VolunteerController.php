@@ -65,7 +65,7 @@ class VolunteerController
         $volunteer->setEmail($email);
         $volunteer->setPhone($phone);
 
-        if ($volunteer->update()) {
+        if ($volunteer->update_volunteer()) {
             echo "<script>alert('Volunteer updated successfully!'); window.location.href='index.php?action=showVolunteers';</script>";
         } else {
             echo "<script>alert('Error updating volunteer.'); window.history.back();</script>";

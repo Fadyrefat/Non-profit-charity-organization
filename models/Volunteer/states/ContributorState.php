@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../VolunteerState.php';
+require_once __DIR__ . '/SupporterState.php';
 
 class ContributorState implements VolunteerState
 {

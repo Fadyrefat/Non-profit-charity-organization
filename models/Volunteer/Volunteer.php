@@ -148,7 +148,7 @@ class Volunteer
         return null;
     }
 
-    public function update(): bool
+    public function update_volunteer(): bool
     {
         require_once __DIR__ . '/../../config/Database.php';
         $conn = Database::getInstance()->getConnection();
