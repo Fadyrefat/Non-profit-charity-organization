@@ -1,21 +1,19 @@
 <?php
 
 class PendingState implements RequestState {
-    public function approve(BeneficiaryRequest $request) {
+    public function approve(BeneficiaryRequest $request): void {
         $request->setState(new ApprovedState());
-        echo "Request approved successfully.\n";
     }
 
-    public function reject(BeneficiaryRequest $request) {
+    public function reject(BeneficiaryRequest $request): void {
         $request->setState(new RejectedState());
-        echo "Request rejected.\n";
     }
 
-    public function complete(BeneficiaryRequest $request) {
-        echo "Cannot complete a pending request. Please approve it first.\n";
+    public function complete(BeneficiaryRequest $request): void {
+        throw new Exception("Cannot complete a request that is still pending.");
     }
 
-    public function getStateName() {
+    public function getName(): string {
         return "Pending";
     }
 }

@@ -1,20 +1,14 @@
 <?php
 
 class ApprovedState implements RequestState {
-    public function approve(BeneficiaryRequest $request) {
-        echo "Request is already approved.\n";
+    public function approve(BeneficiaryRequest $request): void {}
+    public function reject(BeneficiaryRequest $request): void {
+        $request->setState(new RejectedState());
     }
-
-    public function reject(BeneficiaryRequest $request) {
-        echo "Cannot reject an approved request.\n";
-    }
-
-    public function complete(BeneficiaryRequest $request) {
+    public function complete(BeneficiaryRequest $request): void {
         $request->setState(new CompletedState());
-        echo "Request marked as completed.\n";
     }
-
-    public function getStateName() {
+    public function getName(): string {
         return "Approved";
     }
 }

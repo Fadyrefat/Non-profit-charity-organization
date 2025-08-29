@@ -2,34 +2,28 @@
 
 require_once "RequestState.php";
 require_once "PendingState.php";
-require_once "Beneficiary.php"; // Include the Beneficiary class
+require_once "Beneficiary.php";
 
 abstract class BeneficiaryRequest {
     protected $requestState;
     protected $requestType;
-    protected $beneficiary; // Association: Each request has one beneficiary
+    protected $beneficiary;
 
-    public function __construct(Beneficiary $beneficiary) {
-        $this->beneficiary = $beneficiary; // Store the beneficiary object
-        $this->requestState = new PendingState();
+    // Common attributes for all requests
+    protected $number;
+    protected $reason;
+
+    public function __construct(Beneficiary $beneficiary, $number, $reason) {
+        $this->beneficiary = $beneficiary;
+        $this->number = $number;
+        $this->reason = $reason;
+        $this->requestState = new PendingState(); // default state
         $this->setRequestType();
     }
 
-    public function getState(): RequestState {
-        return $this->requestState;
-    }
-
-    // State management methods
-    public function approve() {
-        $this->requestState->approve($this);
-    }
-
-    public function reject() {
-        $this->requestState->reject($this);
-    }
-
-    public function complete() {
-        $this->requestState->complete($this);
+    // ========== State Handling ==========
+    public function setState(RequestState $state) {
+        $this->requestState = $state;
     }
 
     public function getStatus(): string {
@@ -40,17 +34,29 @@ abstract class BeneficiaryRequest {
         return $this->requestType;
     }
 
-    // Getter for the associated beneficiary
+    // ========== Beneficiary Association ==========
     public function getBeneficiary(): Beneficiary {
         return $this->beneficiary;
     }
 
-    // Optional: Setter if you need to change the beneficiary later
-    public function setBeneficiary(Beneficiary $beneficiary) {
-        $this->beneficiary = $beneficiary;
+    // ========== Common Attributes ==========
+    public function getNumber() {
+        return $this->number;
     }
 
-    // Abstract method to be implemented by child classes
+    public function setNumber($number) {
+        $this->number = $number;
+    }
+
+    public function getReason() {
+        return $this->reason;
+    }
+
+    public function setReason($reason) {
+        $this->reason = $reason;
+    }
+
+    // ========== Abstract ==========
     abstract protected function setRequestType();
 }
 ?>
