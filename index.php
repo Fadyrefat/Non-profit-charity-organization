@@ -3,10 +3,7 @@ require_once 'config/Database.php';
 
 // 🔄 Run table setup if not already created
 $conn = Database::getInstance()->getConnection();
-$tableCheck = mysqli_query($conn, "SHOW TABLES LIKE 'donors'");
-if (mysqli_num_rows($tableCheck) == 0) {
-    require_once __DIR__ . '/config/init_db.php';
-}
+require_once __DIR__ . '/config/init_db.php';
 
 // 🌐 Detect request method
 $requestMethod = $_SERVER['REQUEST_METHOD'];
@@ -31,10 +28,41 @@ if ($requestMethod === 'GET') {
             $controller->DonerForm();
             break;
 
-        case 'addDonation' :
+        case 'addDonation':
             require_once 'controllers/DonationController.php';
             $controller = new DonationController();
             $controller->DonationForm();
+            break;
+
+        case 'VolunteerDepartment':
+            require_once 'controllers/VolunteerController.php';
+            $controller = new VolunteerController();
+            $controller->Index();
+            break;
+
+        case 'addVolunteer':
+            require_once 'controllers/VolunteerController.php';
+            $controller = new VolunteerController();
+            $controller->VolunteerForm();
+            break;
+
+
+        case 'showVolunteers':
+            require_once 'controllers/VolunteerController.php';
+            $controller = new VolunteerController();
+            $controller->showVolunteers();
+            break;
+
+        case 'editVolunteer':
+            require_once 'controllers/VolunteerController.php';
+            $controller = new VolunteerController();
+            $controller->editVolunteer($_GET['id']);
+            break;
+
+        case 'deleteVolunteer':
+            require_once 'controllers/VolunteerController.php';
+            $controller = new VolunteerController();
+            $controller->deleteVolunteer($_GET['id']);
             break;
 
         default:
@@ -50,11 +78,24 @@ elseif ($requestMethod === 'POST') {
             $controller = new DonationController();
             $controller->addDoner($_POST);
             break;
-        
+
         case 'addDonation':
             require_once 'controllers/DonationController.php';
             $controller = new DonationController();
             $controller->addDonation($_POST);
+            break;
+
+        case 'addVolunteer':
+            require_once 'controllers/VolunteerController.php';
+            $controller = new VolunteerController();
+            $controller->addVolunteer($_POST);
+            break;
+
+
+        case 'updateVolunteer':
+            require_once 'controllers/VolunteerController.php';
+            $controller = new VolunteerController();
+            $controller->updateVolunteer($_POST);
             break;
 
         default:

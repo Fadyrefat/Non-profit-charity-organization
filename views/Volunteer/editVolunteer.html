@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Volunteer</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      margin: 30px; 
+      background-color: #f8f9fa; 
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    h1 { 
+      color: #2c3e50; 
+      text-align: center; 
+      margin-bottom: 30px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #555;
+    }
+    
+    input[type="text"], input[type="email"], input[type="tel"], input[type="number"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    
+    input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, input[type="number"]:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+    
+    .btn {
+      padding: 12px 25px;
+      margin: 10px 5px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+    
+    .btn-primary {
+      background: #007bff;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #0056b3;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: #545b62;
+    }
+    
+    .volunteer-info {
+      background: #e8f4f8;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      border-left: 4px solid #007bff;
+    }
+    
+    .state-badge {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.9em;
+      font-weight: bold;
+      display: inline-block;
+      margin-left: 10px;
+    }
+    
+    .state-helper { background-color: #e3f2fd; color: #1976d2; }
+    .state-contributor { background-color: #f3e5f5; color: #7b1fa2; }
+    .state-supporter { background-color: #e8f5e8; color: #388e3c; }
+    .state-leader { background-color: #fff3e0; color: #f57c00; }
+    .state-champion { background-color: #fce4ec; color: #c2185b; }
+    
+    .buttons {
+      text-align: center;
+      margin-top: 30px;
+    }
+    
+    .warning {
+      background: #fff3cd;
+      color: #856404;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      border: 1px solid #ffeaa7;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Edit Volunteer</h1>
+
+    <div class="volunteer-info">
+      <strong>Current Status:</strong> <?= htmlspecialchars($volunteer->getName()) ?>
+      <span class="state-badge state-<?= strtolower($volunteer->getStateName()) ?>">
+        <?= $volunteer->getStateName() ?>
+      </span>
+      <br><br>
+      <strong>Current Hours:</strong> <?= $volunteer->getHours() ?> hours
+    </div>
+
+
+    <form method="POST" action="index.php?action=updateVolunteer">
+      <input type="hidden" name="id" value="<?= $volunteer->getId() ?>">
+      
+      <div class="form-group">
+        <label for="name">Full Name:</label>
+        <input type="text" id="name" name="name" value="<?= htmlspecialchars($volunteer->getName()) ?>" required>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address:</label>
+        <input type="email" id="email" name="email" value="<?= htmlspecialchars($volunteer->getEmail()) ?>" required>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" name="phone" value="<?= htmlspecialchars($volunteer->getPhone()) ?>" required>
+      </div>
+
+      <div class="buttons">
+        <button type="submit" class="btn btn-primary">Update Volunteer</button>
+        <a href="index.php?action=showVolunteers" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+</body>
+</html>

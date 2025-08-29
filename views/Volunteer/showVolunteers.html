@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>All Volunteers</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; }
+    h1 { color: #2c3e50; text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+    th { background-color: #f8f9fa; font-weight: bold; }
+    tr:hover { background-color: #f5f5f5; }
+    .state-badge {
+      padding: 4px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold;
+    }
+    .state-helper { background-color: #e3f2fd; color: #1976d2; }
+    .state-contributor { background-color: #f3e5f5; color: #7b1fa2; }
+    .state-supporter { background-color: #e8f5e8; color: #388e3c; }
+    .state-leader { background-color: #fff3e0; color: #f57c00; }
+  .state-champion { background-color: #fce4ec; color: #c2185b; }
+    .back-btn {
+      margin-bottom: 20px; padding: 10px 20px;
+      background: #6c757d; color: white;
+      border: none; border-radius: 5px;
+      cursor: pointer; text-decoration: none;
+      display: inline-block;
+    }
+    .back-btn:hover { background: #545b62; }
+    .no-volunteers {
+      text-align: center; padding: 40px; color: #6c757d;
+    }
+    .action-buttons {
+      display: flex; gap: 5px; align-items: center;
+    }
+    .btn {
+      padding: 6px 12px; border: none; border-radius: 4px;
+      cursor: pointer; text-decoration: none; font-size: 0.9em;
+      display: inline-block; text-align: center;
+    }
+    .btn-edit {
+      background: #007bff; color: white;
+    }
+    .btn-edit:hover {
+      background: #0056b3;
+    }
+    .btn-delete {
+      background: #dc3545; color: white;
+    }
+    .btn-delete:hover {
+      background: #c82333;
+    }
+  </style>
+</head>
+<body>
+
+  <a href="index.php?action=VolunteerDepartment" class="back-btn">← Back to Volunteer Department</a>
+  
+  <h1>All Volunteers</h1>
+
+  <?php if (empty($volunteers)): ?>
+    <div class="no-volunteers">
+      <h3>No volunteers found</h3>
+      <p>Start by <a href="index.php?action=addVolunteer">adding a volunteer</a></p>
+    </div>
+  <?php else: ?>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Hours</th>
+          <th>State</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php foreach ($volunteers as $volunteer): ?>
+          <?php 
+            $stateClass = 'state-' . strtolower($volunteer->getStateName());
+          ?>
+          <tr>
+            <td><strong><?= htmlspecialchars($volunteer->getName()) ?></strong></td>
+            <td><?= htmlspecialchars($volunteer->getEmail()) ?></td>
+            <td><?= htmlspecialchars($volunteer->getPhone()) ?></td>
+            <td><strong><?= $volunteer->getHours() ?></strong> hours</td>
+            <td>
+              <span class="state-badge <?= $stateClass ?>">
+                <?= $volunteer->getStateName() ?>
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <a href="index.php?action=editVolunteer&id=<?= $volunteer->getId() ?>" class="btn btn-edit">Edit</a>
+                <a href="index.php?action=deleteVolunteer&id=<?= $volunteer->getId() ?>" class="btn btn-delete" data-id="<?= $volunteer->getId() ?>" data-name="<?= htmlspecialchars($volunteer->getName(), ENT_QUOTES) ?>" onclick="return confirm('Are you sure you want to delete volunteer ' + this.dataset.name + '? This action cannot be undone.');">Delete</a>
+              </div>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+
+    <div style="margin-top: 30px; text-align: center;">
+      <h3>Volunteer Statistics</h3>
+      <p><strong>Total Volunteers:</strong> <?= count($volunteers) ?></p>
+      <p><strong>Total Hours Contributed:</strong> <?= array_sum(array_map(fn($v) => $v->getHours(), $volunteers)) ?></p>
+      
+      <?php 
+        $stateStats = [];
+        foreach ($volunteers as $volunteer) {
+          $state = $volunteer->getStateName();
+          $stateStats[$state] = ($stateStats[$state] ?? 0) + 1;
+        }
+      ?>
+      
+      <div style="display: inline-block; text-align: left;">
+        <h4>Volunteers by State:</h4>
+        <?php foreach ($stateStats as $state => $count): ?>
+          <p><strong><?= $state ?>:</strong> <?= $count ?> volunteer<?= $count !== 1 ? 's' : '' ?></p>
+        <?php endforeach; ?>
+      </div>
+    </div>
+  <?php endif; ?>
+
+
+</body>
+</html>
