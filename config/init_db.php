@@ -23,8 +23,25 @@ mysqli_query($conn, "
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (donor_id) REFERENCES donors(id) ON DELETE CASCADE
     )
+
 ");
 
+// Create inventory table
+mysqli_query($conn, "
+    CREATE TABLE IF NOT EXISTS inventory (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        food INT DEFAULT 0,
+        money DECIMAL(10,2) DEFAULT 0,
+        clothes INT DEFAULT 0
+    )
+");
+
+// Insert a default row if none exists
+$result = mysqli_query($conn, "SELECT COUNT(*) as count FROM inventory");
+$row = mysqli_fetch_assoc($result);
+if ($row['count'] == 0) {
+    mysqli_query($conn, "INSERT INTO inventory (food, money, clothes) VALUES (0, 0, 0)");
+}
 // Create volunteers table
 mysqli_query($conn, "
     CREATE TABLE IF NOT EXISTS volunteers (
@@ -36,5 +53,7 @@ mysqli_query($conn, "
         state VARCHAR(20) DEFAULT 'Helper'
     )
 ");
+
+
 
 
