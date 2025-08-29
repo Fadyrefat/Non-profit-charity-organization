@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Charity Organization</title>
+  <title>Volunteer Department</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -12,41 +12,40 @@
       padding: 50px;
     }
     h1 {
-      font-size: 2.5em;
+      font-size: 2.3em;
       margin-bottom: 40px;
       color: #2c3e50;
     }
     .btn-container {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      display: flex;
+      flex-direction: column;
       gap: 20px;
-      max-width: 500px;
+      align-items: center;
+      max-width: 400px;
       margin: 0 auto;
     }
     .btn {
       display: block;
-      padding: 20px;
+      width: 100%;
+      padding: 15px;
       font-size: 1.2em;
       color: #fff;
-      background-color: #3498db;
-      border: none;
-      border-radius: 10px;
+      background-color: #27ae60;
+      border-radius: 8px;
       text-decoration: none;
-      cursor: pointer;
       transition: background-color 0.3s;
     }
     .btn:hover {
-      background-color: #2980b9;
+      background-color: #1e8449;
     }
   </style>
 </head>
 <body>
-  <h1>Welcome to our Charity Organization</h1>
+  <h1>Volunteer Department</h1>
   <div class="btn-container">
-    <a href="index.php?action=DonationDepartment" class="btn">Donation Department</a>
-    <a href="index.php?action=VolunteerDepartment" class="btn">Volunteer Department</a>
-    <a href="" class="btn">Beneficiary Department</a>
-    <a href="" class="btn">Event Department</a>
+    <a href="index.php?action=addVolunteer" class="btn">Add Volunteer</a>
+    <a href="index.php?action=showVolunteers" class="btn">Show All Volunteers</a>
+    <a href="index.php" class="btn" style="background-color: #6c757d;">Back to Home</a>
   </div>
 </body>
 </html>

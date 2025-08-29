@@ -25,4 +25,16 @@ mysqli_query($conn, "
     )
 ");
 
+// Create volunteers table
+mysqli_query($conn, "
+    CREATE TABLE IF NOT EXISTS volunteers (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        email VARCHAR(100) UNIQUE NOT NULL,
+        phone VARCHAR(20) NOT NULL,
+        hours INT DEFAULT 0,
+        state VARCHAR(20) DEFAULT 'Helper'
+    )
+");
+
 
