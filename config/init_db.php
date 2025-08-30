@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS MoneyDonations(
         )
 
 ");
-=======
+
 // ========== Requests Table ==========
 mysqli_query($conn, "
     CREATE TABLE IF NOT EXISTS requests (
