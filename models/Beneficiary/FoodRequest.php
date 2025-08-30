@@ -1,6 +1,6 @@
 <?php
 
-require_once "../BeneficiaryRequest.php";
+require_once "BeneficiaryRequest.php";
 
 class FoodRequest extends BeneficiaryRequest
 {

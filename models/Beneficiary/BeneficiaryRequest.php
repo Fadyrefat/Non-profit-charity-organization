@@ -1,8 +1,5 @@
 <?php
-
-require_once "RequestState.php";
-require_once "PendingState.php";
-require_once "Beneficiary.php";
+require_once __DIR__ . "/PendingState.php";
 
 abstract class BeneficiaryRequest {
     protected $requestState;
@@ -27,7 +24,7 @@ abstract class BeneficiaryRequest {
     }
 
     public function getStatus(): string {
-        return $this->requestState->getStateName();
+        return $this->requestState->getName();
     }
 
     public function getType(): string {
@@ -56,7 +53,43 @@ abstract class BeneficiaryRequest {
         $this->reason = $reason;
     }
 
+    // ========== Insert into DB ==========
+    public function insert($conn) {
+        // prepare
+        $stmt = $conn->prepare("
+            INSERT INTO requests (beneficiary_id, request_type, number, reason, state) 
+            VALUES (?, ?, ?, ?, ?)
+        ");
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . $conn->error);
+        }
+
+        $beneficiaryId = (int)$this->beneficiary->getId();
+        if ($beneficiaryId <= 0) {
+            throw new Exception("Invalid beneficiary id (null/0).");
+        }
+
+        $requestType = $this->getType();
+        $number      = $this->number !== null ? (int)$this->number : 1; // default 1 if empty
+        $reason      = $this->reason ?? '';
+        $state       = $this->getStatus();
+
+        // types: i = int, s = string, i for number
+        $stmt->bind_param("isiss", $beneficiaryId, $requestType, $number, $reason, $state);
+
+        if (!$stmt->execute()) {
+            $err = $stmt->error;
+            $stmt->close();
+            throw new Exception("Database insert failed: " . $err);
+        }
+
+        $insertId = $conn->insert_id; // connection property
+        $stmt->close();
+
+        return $insertId;
+    }
+
+
     // ========== Abstract ==========
     abstract protected function setRequestType();
 }
-?>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Request</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f7fa; padding: 30px; }
+    h2 { color: #333; }
+    form { max-width: 400px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    label { display: block; margin: 10px 0 5px; }
+    input, select, textarea { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; }
+    button { background: #007BFF; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    .back { display: block; margin-top: 15px; text-align: center; }
+  </style>
+</head>
+<body>
+  <h2>Add Request</h2>
+  <form method="POST" action="index.php?action=addRequest">
+
+    <!-- Beneficiary (dropdown) -->
+      <label for="beneficiary_id">Select Beneficiary *</label>
+      <select name="beneficiary_id" id="beneficiary_id" required>
+          <option value="">-- Select Beneficiary --</option>
+          <?php foreach ($beneficiaries as $b): ?>
+              <option value="<?= $b->getId() ?>"><?= $b->getName() ?> (ID: <?= $b->getId() ?>)</option>
+          <?php endforeach; ?>
+      </select>
+
+
+    <!-- Request type -->
+    <label for="request_type">Request Type *</label>
+    <select name="request_type" required>
+      <option value="">-- Select Type --</option>
+      <option value="Food">Food</option>
+      <option value="Clothes">Clothes</option>
+      <option value="Financial">Financial</option>
+    </select>
+
+    <!-- Number (optional) -->
+    <label for="number">Number</label>
+    <input type="number" name="number" min="1">
+
+    <!-- Reason (optional) -->
+    <label for="reason">Reason</label>
+    <textarea name="reason" rows="4" placeholder="Enter reason (optional)"></textarea>
+
+    <!-- State (optional, default = Pending in DB) -->
+    <label for="state">State</label>
+    <select name="state">
+      <option value="">-- Default (Pending) --</option>
+      <option value="Pending">Pending</option>
+      <option value="Approved">Approved</option>
+      <option value="Rejected">Rejected</option>
+      <option value="Completed">Completed</option>
+    </select>
+
+    <button type="submit">Add Request</button>
+  </form>
+
+  <a href="index.html" class="back">⬅ Back to Dashboard</a>
+</body>
+</html>

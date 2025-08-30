@@ -1,4 +1,7 @@
 <?php
+require_once "RequestState.php";
+require_once "ApprovedState.php";
+require_once "RejectedState.php";
 
 class PendingState implements RequestState {
     public function approve(BeneficiaryRequest $request): void {
