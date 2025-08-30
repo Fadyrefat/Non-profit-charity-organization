@@ -45,10 +45,10 @@
           <td><?= htmlspecialchars($req['created_at']) ?></td>
           <td>
             <?php if($req['state'] === 'Pending'): ?>
-              <button class="action-btn approve" onclick="updateStatus(<?= $req['id'] ?>, 'Approved')">Approve</button>
-              <button class="action-btn reject" onclick="updateStatus(<?= $req['id'] ?>, 'Rejected')">Reject</button>
+              <a href="index.php?action=approveRequest&id=<?= $req['id'] ?>" class="action-btn approve">Approve</a>
+              <a href="index.php?action=rejectRequest&id=<?= $req['id'] ?>" class="action-btn reject">Reject</a>
             <?php elseif($req['state'] === 'Approved'): ?>
-              <button class="action-btn complete" onclick="updateStatus(<?= $req['id'] ?>, 'Completed')">Complete</button>
+              <a href="index.php?action=completeRequest&id=<?= $req['id'] ?>" class="action-btn complete">Complete</a>
             <?php else: ?>
               -
             <?php endif; ?>
@@ -71,13 +71,12 @@
     <button onclick="filterStatus('All')">All Requests</button>
   </div>
 
-  <a href="index.html" class="back">⬅ Back to Dashboard</a>
+  <a href="index.php?action=BeneficiaryDepartment" class="back">⬅ Back to Dashboard</a>
 
   <script>
     function filterStatus(status) {
       const table = document.getElementById('requestsTable');
       const rows = table.getElementsByTagName('tr');
-
       for (let i = 1; i < rows.length; i++) {
         const statusCell = rows[i].getElementsByClassName('status')[0];
         if (status === 'All' || statusCell.textContent === status) {
@@ -86,12 +85,6 @@
           rows[i].style.display = 'none';
         }
       }
-    }
-
-    // Dummy function: replace with AJAX or form submission
-    function updateStatus(requestId, newStatus) {
-      alert(`Request ${requestId} will be updated to ${newStatus}`);
-      // TODO: Send AJAX request to server to update status in DB
     }
   </script>
 </body>

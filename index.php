@@ -83,6 +83,28 @@ if ($requestMethod === 'GET') {
             (new BeneficiaryController())->showRequests();
             break;
 
+        // ===== Approve / Reject / Complete Requests =====
+        case 'approveRequest':
+            if (isset($_GET['id'])) {
+                require_once "controllers/BeneficiaryController.php";
+                (new BeneficiaryController())->approveRequest((int)$_GET['id']);
+            }
+            break;
+
+        case 'rejectRequest':
+            if (isset($_GET['id'])) {
+                require_once "controllers/BeneficiaryController.php";
+                (new BeneficiaryController())->rejectRequest((int)$_GET['id']);
+            }
+            break;
+
+        case 'completeRequest':
+            if (isset($_GET['id'])) {
+                require_once "controllers/BeneficiaryController.php";
+                (new BeneficiaryController())->completeRequest((int)$_GET['id']);
+            }
+            break;
+
         default:
             echo "404 - Page not found (GET)";
     }
@@ -111,7 +133,7 @@ elseif ($requestMethod === 'POST') {
             (new VolunteerController())->updateVolunteer($_POST);
             break;
 
-        // You’ll likely want POST handling for Beneficiary + Requests here too
+        // Beneficiary + Requests
         case 'addBeneficiary':
             require_once 'controllers/BeneficiaryController.php';
             (new BeneficiaryController())->addBeneficiary($_POST);

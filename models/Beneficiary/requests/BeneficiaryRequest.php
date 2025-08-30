@@ -57,36 +57,4 @@ abstract class BeneficiaryRequest {
     public function setReason(string $reason): void {
         $this->reason = $reason;
     }
-
-    // ========== Database Storage ==========
-    public function insert(mysqli $conn): int {
-        $beneficiaryId = $this->beneficiary->getId();
-
-        // ✅ Check if beneficiary exists in the database
-        $result = $conn->query("SELECT id FROM beneficiaries WHERE id = $beneficiaryId");
-        if (!$result || $result->num_rows === 0) {
-            throw new Exception("Cannot insert request: Beneficiary ID $beneficiaryId does not exist.");
-        }
-
-        $stmt = $conn->prepare("
-            INSERT INTO requests (beneficiary_id, request_type, number, reason, state)
-            VALUES (?, ?, ?, ?, ?)
-        ");
-        if (!$stmt) {
-            throw new Exception("Prepare failed: " . $conn->error);
-        }
-
-        $type   = $this->getType();
-        $number = $this->getNumber();
-        $reason = $this->getReason();
-        $state  = $this->getStatus();
-
-        $stmt->bind_param("isiss", $beneficiaryId, $type, $number, $reason, $state);
-
-        if (!$stmt->execute()) {
-            throw new Exception("Execute failed: " . $stmt->error);
-        }
-
-        return $stmt->insert_id;
-    }
 }
