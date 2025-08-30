@@ -14,7 +14,7 @@ mysqli_query($conn, "
 ");
 
 // Create donations table
-mysqli_query($conn, "
+/*mysqli_query($conn, "
     CREATE TABLE IF NOT EXISTS donations (
         id INT AUTO_INCREMENT PRIMARY KEY,
         donor_id INT NOT NULL,
@@ -24,7 +24,7 @@ mysqli_query($conn, "
         FOREIGN KEY (donor_id) REFERENCES donors(id) ON DELETE CASCADE
     )
 
-");
+");*/
 
 // Create inventory table
 mysqli_query($conn, "
@@ -64,7 +64,6 @@ mysqli_query($conn, "
         address VARCHAR(255) NOT NULL
     )
 ");
-
 // ========== Requests Table ==========
 mysqli_query($conn, "
     CREATE TABLE IF NOT EXISTS requests (
@@ -78,4 +77,131 @@ mysqli_query($conn, "
         FOREIGN KEY (beneficiary_id) REFERENCES beneficiaries(id) ON DELETE CASCADE
     )
 ");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+mysqli_query($conn,"
+CREATE TABLE IF NOT EXISTS FoodDonations(
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        description VARCHAR(200),
+        amount INT NOT NULL,
+        donor_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (donor_id) REFERENCES donors(id) ON DELETE CASCADE
+        )
+
+");
+mysqli_query($conn,"
+CREATE TABLE IF NOT EXISTS ClothesDonations(
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        description VARCHAR(200),
+        amount INT NOT NULL,
+        donor_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (donor_id) REFERENCES donors(id) ON DELETE CASCADE
+        )
+
+");
+mysqli_query($conn,"
+CREATE TABLE IF NOT EXISTS MoneyDonations(
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        paymentmethod VARCHAR(50),
+        amount DECIMAL(10,2) NOT NULL,
+        donor_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (donor_id) REFERENCES donors(id) ON DELETE CASCADE
+        )
+
+");
+
+
 ?>
+
