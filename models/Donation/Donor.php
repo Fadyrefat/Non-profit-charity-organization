@@ -50,8 +50,21 @@ public static function getDonors() {
 
     $donors = [];
     while ($row = mysqli_fetch_assoc($result)) {
-        $donors[] = $row;
+        $donors[] = new Donor($row['id'],$row['name'],$row['email'],$row['phone']);
     }
     return $donors;
 }
-} //fgsffrbf
+
+    public static function getDonorByID($id): ?Donor {
+        $conn = Database::getInstance()->getConnection();
+        $sql = "SELECT * FROM donors WHERE id = $id LIMIT 1";
+        $result = mysqli_query($conn, $sql);
+
+        if ($row = mysqli_fetch_assoc($result)) {
+            return new Donor($row['id'], $row['name'], $row['email'], $row['phone']);
+        }
+
+        return null; // return null if donor not found
+    }
+
+} 
