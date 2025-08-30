@@ -6,7 +6,7 @@ class Beneficiary
     protected $name;
     protected $address;
 
-    public function __construct($name, $address = null, $id = null)
+    public function __construct($name, $address = null,$id = null)
     {
         $this->id = $id;
         $this->name = $name;
@@ -57,6 +57,21 @@ class Beneficiary
             return false;
         }
     }
+    public static function getById($id) {
+        if ($id <= 0) return null;
+
+        $conn = Database::getInstance()->getConnection();
+        $stmt = $conn->prepare("SELECT id, name, address FROM beneficiaries WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+
+        if ($result) {
+            return new Beneficiary($result['name'], $result['address'] ?? null, $result['id']);
+        }
+        return null;
+    }
+
 
     
     // Static method to fetch all beneficiaries
@@ -67,9 +82,11 @@ class Beneficiary
 
         $beneficiaries = [];
         while ($row = mysqli_fetch_assoc($result)) {
-            $beneficiaries[] = new Beneficiary($row['id'], $row['name'], $row['address']);
+            $beneficiaries[] = new Beneficiary( $row['name'], $row['address'] ?? '',$row['id']);
         }
         return $beneficiaries;
     }
+
+    
 }
 ?>

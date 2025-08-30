@@ -21,12 +21,12 @@
 
     <!-- Beneficiary (dropdown) -->
       <label for="beneficiary_id">Select Beneficiary *</label>
-      <select name="beneficiary_id" id="beneficiary_id" required>
-          <option value="">-- Select Beneficiary --</option>
-          <?php foreach ($beneficiaries as $b): ?>
-              <option value="<?= $b->getId() ?>"><?= $b->getName() ?> (ID: <?= $b->getId() ?>)</option>
-          <?php endforeach; ?>
-      </select>
+  <select name="beneficiary_id" id="beneficiary_id" required>
+      <option value="" disabled selected>-- Select Beneficiary --</option>
+      <?php foreach ($beneficiaries as $b): ?>
+          <option value="<?= $b->getId() ?>"><?= $b->getName() ?> (ID: <?= $b->getId() ?>)</option>
+      <?php endforeach; ?>
+  </select>
 
 
     <!-- Request type -->

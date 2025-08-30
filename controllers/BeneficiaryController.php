@@ -7,6 +7,21 @@ class BeneficiaryController {
     public function __construct() {
         // ✅ Initialize DB connection once
         $this->conn = Database::getInstance()->getConnection();
+
+        // Include Beneficiary model once
+        require_once 'models/Beneficiary/Beneficiary.php';
+
+        // Include Request classes once
+        require_once 'models/Beneficiary/RequestFactory.php';
+        require_once 'models/Beneficiary/requests/FoodRequest.php';
+        require_once 'models/Beneficiary/requests/ClothesRequest.php';
+        require_once 'models/Beneficiary/requests/FinancialRequest.php';
+
+        // Include all states
+        require_once 'models/Beneficiary/states/PendingState.php';
+        require_once 'models/Beneficiary/states/ApprovedState.php';
+        require_once 'models/Beneficiary/states/RejectedState.php';
+        require_once 'models/Beneficiary/states/CompletedState.php';
     }
 
     // ----------------------------
@@ -27,8 +42,6 @@ class BeneficiaryController {
 
     // Handle Add Beneficiary (POST)
     public function addBeneficiary($data) {
-        require_once 'models/Beneficiary/Beneficiary.php';
-
         $name    = $data['name'] ?? null;
         $address = $data['address'] ?? null;
 
@@ -46,8 +59,6 @@ class BeneficiaryController {
 
     // Show All Beneficiaries
     public function showAll() {
-        require_once 'models/Beneficiary/Beneficiary.php';
-
         $result = $this->conn->query("SELECT * FROM beneficiaries ORDER BY id DESC");
 
         $beneficiaries = [];
@@ -63,76 +74,42 @@ class BeneficiaryController {
     // ----------------------------
 
     // Show Add Request Form
-    // BeneficiaryController.php
     public function addRequestForm() {
-        // Include Beneficiary model
-        require_once 'models/Beneficiary/Beneficiary.php';
-
         // Fetch all beneficiaries
-        $beneficiaries = Beneficiary::getBeneficiaries(); // create this static method in Beneficiary model
+        $beneficiaries = Beneficiary::getBeneficiaries();
 
         // Load the view
         require_once 'views/Beneficiary/addRequest.html';
     }
-
+    
+    // Handle Add Request (POST)
     public function addRequest($data) {
-        require_once 'models/Beneficiary/Beneficiary.php';
-        require_once 'models/Beneficiary/BeneficiaryRequest.php';
-        require_once 'models/Beneficiary/ClothesRequest.php';
-        require_once 'models/Beneficiary/FoodRequest.php';
-        require_once 'models/Beneficiary/FinancialRequest.php';
+        $type        = $data['request_type'] ?? '';
+        $number      = isset($data['number']) ? (int)$data['number'] : 0;
+        $reason      = $data['reason'] ?? '';
+        $beneficiaryId = isset($data['beneficiary_id']) ? (int)$data['beneficiary_id'] : 0;
 
-        $beneficiaryId = $_POST['beneficiary_id'] ?? 0;
-        $requestType   = strtolower(trim($_POST['request_type'] ?? ''));
-        $number        = isset($_POST['number']) && $_POST['number'] !== '' ? (int)$_POST['number'] : null;
-        $reason        = trim($_POST['reason'] ?? '');
-
-        // Validate required fields
-        if ($beneficiaryId <= 0 || !$requestType) {
-            echo "❌ Beneficiary ID and Request Type are required.";
-            return;
+        if ($beneficiaryId <= 0) {
+            throw new Exception("Please select a valid beneficiary. ID: $beneficiaryId");
         }
 
-        // Fetch Beneficiary object
-        $beneficiary = Beneficiary::findById((int)$beneficiaryId);
+        $beneficiary = Beneficiary::getById($beneficiaryId);
         if (!$beneficiary) {
-            echo "❌ Beneficiary not found.";
-            return;
+            throw new Exception("Beneficiary not found with ID $beneficiaryId");
         }
 
-        // Map request types to classes
-        $map = [
-            'clothes'   => 'ClothesRequest',
-            'food'      => 'FoodRequest',
-            'financial' => 'FinancialRequest'
-        ];
+        $request = RequestFactory::createRequest($beneficiary, $type, $number, $reason);
+        $insertedId = $request->insert($this->conn);
 
-        if (!isset($map[$requestType])) {
-            echo "❌ Invalid request type.";
-            return;
-        }
-
-        // Create request object
-        $className = $map[$requestType];
-        $request = new $className($beneficiary, $number, $reason);
-
-        // Insert into DB
-        try {
-            $requestId = $request->insert($this->conn);
-            header("Location: index.php?action=showRequests");
-            exit;
-        } catch (Exception $e) {
-            echo "❌ Could not insert request: " . $e->getMessage();
-        }
+        header("Location: index.php?action=showRequests");
+        exit;
     }
 
     // Show All Requests
     public function showRequests() {
-        require_once 'models/Beneficiary/BeneficiaryRequest.php';
-
         $result = $this->conn->query("
-            SELECT r.id, b.name AS beneficiary_name, r.type, r.description, r.status
-            FROM beneficiary_requests r
+            SELECT r.id, b.name AS beneficiary_name, r.request_type, r.number, r.reason, r.state, r.created_at
+            FROM requests r
             JOIN beneficiaries b ON r.beneficiary_id = b.id
             ORDER BY r.id DESC
         ");
