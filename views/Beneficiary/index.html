@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Charity Organization - Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f7fa; text-align: center; padding: 50px; }
+    h1 { margin-bottom: 30px; color: #333; }
+    .btn-container { display: grid; grid-template-columns: repeat(2, 200px); gap: 20px; justify-content: center; }
+    .btn { display: inline-block; padding: 15px 20px; font-size: 16px; color: #fff; background: #007BFF; border-radius: 8px; text-decoration: none; }
+    .btn:hover { background: #0056b3; }
+  </style>
+</head>
+<body>
+  <h1>Welcome to our Beneficiary Department</h1>
+  <div class="btn-container">
+    <a href="index.php?action=addBeneficiary" class="btn">Add Beneficiary</a>
+    <a href="index.php?action=showBeneficiaries" class="btn">Show Beneficiaries</a>
+    <a href="index.php?action=addRequest" class="btn">Add Request</a>
+    <a href="index.php?action=showRequests" class="btn">Show Requests</a>
+  </div>
+</body>
+</html>

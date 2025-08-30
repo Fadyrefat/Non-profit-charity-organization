@@ -56,6 +56,27 @@ mysqli_query($conn, "
 
 
 
+// ========== Beneficiaries Table ==========
+mysqli_query($conn, "
+    CREATE TABLE IF NOT EXISTS beneficiaries (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        address VARCHAR(255) NOT NULL
+    )
+");
+// ========== Requests Table ==========
+mysqli_query($conn, "
+    CREATE TABLE IF NOT EXISTS requests (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        beneficiary_id INT NOT NULL,
+        request_type ENUM('Food','Clothes','Financial') NOT NULL,
+        number INT NOT NULL,
+        reason TEXT,
+        state ENUM('Pending','Approved','Rejected','Completed') DEFAULT 'Pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (beneficiary_id) REFERENCES beneficiaries(id) ON DELETE CASCADE
+    )
+");
 
 
 
@@ -180,3 +201,7 @@ CREATE TABLE IF NOT EXISTS MoneyDonations(
         )
 
 ");
+
+
+?>
+
