@@ -1,142 +1,132 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Make a Donation</title>
+    <title>Donation Form</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f4f4f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            background: #f8f9fa;
             margin: 0;
+            padding: 0;
         }
 
         .container {
+            max-width: 600px;
+            margin: 50px auto;
             background: #fff;
-            padding: 30px 40px;
+            padding: 25px;
             border-radius: 10px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 500px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
         h2 {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             color: #333;
         }
 
-        label {
-            font-weight: bold;
-            margin-top: 10px;
-            display: block;
-            color: #555;
+        .form-group {
+            margin-bottom: 15px;
         }
 
-        input[type="text"],
-        input[type="number"],
-        select {
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #444;
+        }
+
+        select, input[type="number"], input[type="text"] {
             width: 100%;
             padding: 8px 10px;
-            margin: 5px 0 15px 0;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 6px;
+            font-size: 14px;
             box-sizing: border-box;
         }
 
         input[type="checkbox"] {
-            margin-right: 10px;
+            margin-right: 8px;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .form-check label {
+            font-weight: normal;
+            color: #555;
         }
 
         button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 7px;
-            cursor: pointer;
+            display: block;
             width: 100%;
+            padding: 10px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 6px;
             font-size: 16px;
-            transition: background 0.3s ease;
+            cursor: pointer;
         }
 
         button:hover {
-            background-color: #45a049;
-        }
-
-        .donation-section {
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .donation-section:last-child {
-            border-bottom: none;
+            background: #0056b3;
         }
     </style>
 </head>
 <body>
+
     <div class="container">
         <h2>Make a Donation</h2>
+
         <form action="index.php?action=addDonation" method="POST">
 
             <!-- Donor Selection -->
-            <div class="donation-section">
+            <div class="form-group">
                 <label for="donor_id">Select Donor</label>
                 <select name="donor_id" id="donor_id" required>
                     <option value="">-- Select Donor --</option>
                     <?php foreach ($donors as $donor): ?>
-                        <option value="<?= $donor->getId() ?>"><?= htmlspecialchars($donor->getName()) ?></option>
+                        <option value="<?= $donor['id'] ?>"><?= $donor['name'] ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
 
-            <!-- Money -->
-            <div class="donation-section">
-                <label>
-                    <input type="checkbox" name="money" value="1"> Money
-                </label>
-                Amount: <input type="number" step="0.01" name="money_amount">
-                <select name="payment_method" id="" >
-                    <option value="">-- Select Payment Method --</option>
-                    <option value="cash">cash</option>
-                    <option value="visa">visa</option>
-                    <option value="check">checl</option>
-                </select>          
+            <!-- Amount / Quantity -->
+            <div class="form-group">
+                <label for="amount">Amount / Quantity</label>
+                <input type="number" name="amount" id="amount" required>
             </div>
 
-            <!-- Food -->
-            <div class="donation-section">
-                <label>
-                    <input type="checkbox" name="food" value="1"> Food
-                </label>
-                Description: <input type="text" name="food_description">
-                Quantity: <input type="number" name="food_amount">
+            <!-- Donation Type -->
+            <div class="form-group">
+                <label for="donation_type">Donation Type</label>
+                <select name="donation_type" id="donation_type" required>
+                    <option value="">-- Select Type --</option>
+                    <option value="InKindDonation">InKindDonation</option>
+                    <option value="CheckDonation">CheckDonation</option>
+                    <option value="OnLineDonation">OnLineDonation</option>
+                </select>
             </div>
 
-            <!-- Clothes -->
-            <div class="donation-section">
-                <label>
-                    <input type="checkbox" name="clothes" value="1"> Clothes
-                </label>
-                Description: <input type="text" name="clothes_description">
-                Quantity: <input type="number" name="clothes_amount">
+            <!-- Checkboxes -->
+            <div class="form-check">
+                <input type="checkbox" id="receipt" name="receipt" value="1">
+                <label for="receipt">Generate Receipt</label>
             </div>
 
-            <!-- Receipt & Acknowledgment -->
-            <div class="donation-section">
-              <label>
-                  <input type="checkbox" name="receipt" value="1"> Request Receipt
-               </label>
-               <label>
-                  <input type="checkbox" name="acknowledgment" value="1"> Request Acknowledgment
-                </label>
+            <div class="form-check">
+                <input type="checkbox" id="acknowledgment" name="acknowledgment" value="1">
+                <label for="acknowledgment">Send Acknowledgment</label>
             </div>
 
-            <button type="submit">Donate</button>
+            <!-- Submit -->
+            <button type="submit">Submit Donation</button>
         </form>
     </div>
+
 </body>
 </html>
