@@ -1,8 +1,5 @@
 <?php
-    require_once 'models/donation/DonationFactory.php';
-    require_once 'models/donation/DonationDecorators/ReceiptDecorator.php';
-    require_once 'models/donation/DonationDecorators/AckDecorator.php';
-    
+
 class DonationController {
 
     public function Index() {
@@ -26,16 +23,23 @@ class DonationController {
 
     public function addDonation($data){
           
-    $donation = DonationFactory::createDonation($data);
+    $donor_id = $_POST['donor_id'];
+    $amount = $_POST['amount'] ;
+    $donation_type = $_POST['donation_type'];
+    
+    require_once 'models/donation/DonationFactory.php';
+    require_once 'models/donation/ReceiptDecorator.php';
+    require_once 'models/donation/AckDecorator.php';
+    $donation = DonationFactory::createDonation($donor_id,$donation_type,$amount);
 
-   /* $receipt = isset($_POST['receipt']) ? 1 : 0;
+    $receipt = isset($_POST['receipt']) ? 1 : 0;
     if($receipt)
        {$donation = new ReceiptDecorator($donation);}
 
     $ack = isset($_POST['acknowledgment']) ? 1 : 0;
-    if($receipt)
-       {$donation = new AckDecorator($donation);}   */ 
-  
+    if($ack)
+       {$donation = new AckDecorator($donation);}    
+
     $donation->donate();
 
     }
