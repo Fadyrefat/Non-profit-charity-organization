@@ -114,4 +114,101 @@ mysqli_query($conn, "
         FOREIGN KEY (beneficiary_id) REFERENCES beneficiaries(id) ON DELETE CASCADE
     )
 ");
+
+
+// Event Management
+
+mysqli_query($conn, "
+    CREATE TABLE IF NOT EXISTS events (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        type ENUM('workshop','fundraiser','outreach') NOT NULL,
+        start_datetime DATETIME NOT NULL,
+        end_datetime DATETIME NULL,
+        capacity INT DEFAULT 0,
+        location VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+");
+
+
+mysqli_query($conn, "
+    CREATE TABLE IF NOT EXISTS attendees (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        event_id INT NOT NULL,
+        user_type ENUM('donor','volunteer','beneficiary') NOT NULL,
+        user_id INT NOT NULL,
+        ticket_type ENUM('General','VIP','VIP+') DEFAULT 'General',
+        reminder_methods SET('email','sms','whatsapp') DEFAULT NULL,
+        checked_in TINYINT(1) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
+    )
+");
+
+
+mysqli_query($conn, "
+    CREATE TABLE IF NOT EXISTS event_logs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        event_id INT NOT NULL,
+        action VARCHAR(100),
+        payload TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
+    )
+");
+
+
+// Notifications table (for Observer simulation)
+mysqli_query($conn, "
+    CREATE TABLE IF NOT EXISTS notifications (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        event_id INT NOT NULL,
+        recipient VARCHAR(255),
+        channel ENUM('email','sms','whatsapp') NOT NULL,
+        message TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
+    )
+");
+
+mysqli_query($conn, "
+    CREATE TABLE  IF NOT EXISTS beneficiary_feedback (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        request_id INT NOT NULL,
+        beneficiary_id INT NOT NULL,
+        satisfaction_rating TINYINT,
+        outcome_notes TEXT,
+        reported_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (request_id) REFERENCES requests(id),
+        FOREIGN KEY (beneficiary_id) REFERENCES beneficiaries(id)
+    );
+");
+
+mysqli_query($conn, "
+    CREATE TABLE  IF NOT EXISTS program_metrics (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        metric_name VARCHAR(100),
+        metric_value DECIMAL(10,2),
+        collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+");
+
+
+mysqli_query($conn, "
+    CREATE TABLE IF NOT EXISTS distributions (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        request_id INT NOT NULL,
+        beneficiary_id INT NOT NULL,
+        resource_type VARCHAR(50) NOT NULL, -- Food, Clothes, Financial
+        quantity INT NOT NULL,
+        distributed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        distributed_by VARCHAR(100), -- staff/admin name
+        FOREIGN KEY (request_id) REFERENCES requests(id),
+        FOREIGN KEY (beneficiary_id) REFERENCES beneficiaries(id)
+    );
+
+");
+
 ?>
