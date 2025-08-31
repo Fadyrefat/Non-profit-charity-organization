@@ -1,5 +1,7 @@
 <?php
-class Donor
+require_once __DIR__ . '/../Event_Management/Observer/ObserverInterface.php';
+
+class Donor implements ObserverInterface
 {
     private $id;
     private $name;
@@ -92,5 +94,9 @@ class Donor
         $sql = "DELETE FROM donors WHERE id = $id";
         return mysqli_query($conn, $sql);
     }
-
+public function update($eventId, $payload) {
+    echo "Notification:\n";
+    echo "Event ID: $eventId\n";
+    echo "Payload: $payload\n\n";
+}
 }
