@@ -136,11 +136,23 @@ class BeneficiaryController {
         exit;
     }
 
-    public function showDistributions() {
+        public function showDistributions() {
         require_once 'models/Beneficiary/Distribution.php';
+        require_once 'models/Beneficiary/BeneficiaryFeedback.php';
+
+        // Fetch all distributions
         $distributions = Distribution::getDistributions();
+
+        // Fetch all feedbacks and map by request_id for quick lookup
+        $feedbacksList = BeneficiaryFeedback::getAll();
+        $feedbacks = [];
+        foreach ($feedbacksList as $f) {
+            $feedbacks[$f->getRequestId()] = true; // mark requests that already have feedback
+        }
+
         require 'views/Beneficiary/showDistributions.html';
     }
+
 
     // ---------------------------- Reports ----------------------------
     public function generateReport($reportType) {
@@ -156,43 +168,33 @@ class BeneficiaryController {
     }
 
     public function addFeedback(array $data) {
-        $conn = Database::getInstance()->getConnection();
         $requestId     = isset($data['request_id']) ? (int)$data['request_id'] : 0;
         $beneficiaryId = isset($data['beneficiary_id']) ? (int)$data['beneficiary_id'] : 0;
         $rating        = isset($data['satisfaction_rating']) ? (int)$data['satisfaction_rating'] : null;
         $notes         = $data['outcome_notes'] ?? null;
 
-        $stmt = $conn->prepare("
-            INSERT INTO beneficiary_feedback (request_id, beneficiary_id, satisfaction_rating, outcome_notes)
-            VALUES (?, ?, ?, ?)
-        ");
-        $stmt->bind_param("iiis", $requestId, $beneficiaryId, $rating, $notes);
+        require_once 'models/beneficiary/BeneficiaryFeedback.php';
 
-        if ($stmt->execute()) {
+        try {
+            $feedback = new BeneficiaryFeedback($requestId, $beneficiaryId, $rating, $notes);
+            $feedback->insert(); // call the model's insert method
             header("Location: index.php?action=showFeedbacks");
             exit;
-        } else {
-            echo "❌ Failed to submit feedback: " . $stmt->error;
+        } catch (Exception $e) {
+            echo "❌ Failed to submit feedback: " . $e->getMessage();
         }
     }
 
+
     public function showFeedbacks() {
-        $conn = Database::getInstance()->getConnection();
+        require_once 'models/beneficiary/BeneficiaryFeedback.php';
 
-        $stmt = $conn->prepare("
-            SELECT f.id, f.satisfaction_rating, f.outcome_notes, f.reported_at,
-                   r.request_type, b.name AS beneficiary_name
-            FROM beneficiary_feedback f
-            JOIN requests r ON f.request_id = r.id
-            JOIN beneficiaries b ON f.beneficiary_id = b.id
-            ORDER BY f.reported_at DESC
-        ");
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        $feedbacks = [];
-        while ($row = $result->fetch_assoc()) $feedbacks[] = $row;
-
-        require 'views/Beneficiary/showFeedbacks.html';
+        try {
+            $feedbacks = BeneficiaryFeedback::getAll(); // get all feedbacks from model
+            require 'views/Beneficiary/showFeedbacks.html';
+        } catch (Exception $e) {
+            echo "❌ Failed to fetch feedbacks: " . $e->getMessage();
+        }
     }
+
 }

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -30,12 +30,12 @@
     <?php if (!empty($feedbacks)): ?>
       <?php foreach ($feedbacks as $f): ?>
         <tr>
-          <td><?= htmlspecialchars($f['id']) ?></td>
-          <td><?= htmlspecialchars($f['beneficiary_name']) ?></td>
-          <td><?= htmlspecialchars($f['request_type']) ?></td>
-          <td><?= htmlspecialchars($f['satisfaction_rating'] ?? 'N/A') ?></td>
-          <td><?= htmlspecialchars($f['outcome_notes'] ?? '') ?></td>
-          <td><?= htmlspecialchars($f['reported_at']) ?></td>
+          <td><?= htmlspecialchars($f->getId()) ?></td>
+          <td><?= htmlspecialchars($f->getBeneficiaryName() ?? '') ?></td>
+          <td><?= htmlspecialchars($f->getRequestType() ?? '') ?></td>
+          <td><?= htmlspecialchars($f->getSatisfactionRating() ?? 'N/A') ?></td>
+          <td><?= htmlspecialchars($f->getOutcomeNotes() ?? '') ?></td>
+          <td><?= htmlspecialchars($f->getReportedAt()) ?></td>
         </tr>
       <?php endforeach; ?>
     <?php else: ?>

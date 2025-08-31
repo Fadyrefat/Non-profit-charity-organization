@@ -174,7 +174,7 @@ mysqli_query($conn, "
 ");
 
 mysqli_query($conn, "
-    CREATE TABLE  IF NOT EXISTS beneficiary_feedback (
+    CREATE TABLE IF NOT EXISTS beneficiaryFeedback (
         id INT AUTO_INCREMENT PRIMARY KEY,
         request_id INT NOT NULL,
         beneficiary_id INT NOT NULL,
@@ -182,7 +182,8 @@ mysqli_query($conn, "
         outcome_notes TEXT,
         reported_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (request_id) REFERENCES requests(id),
-        FOREIGN KEY (beneficiary_id) REFERENCES beneficiaries(id)
+        FOREIGN KEY (beneficiary_id) REFERENCES beneficiaries(id),
+        UNIQUE KEY unique_feedback_per_request (request_id, beneficiary_id)
     );
 ");
 
