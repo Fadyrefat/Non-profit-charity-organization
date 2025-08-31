@@ -211,4 +211,24 @@ mysqli_query($conn, "
 
 ");
 
+
+mysqli_query($conn, "
+    CREATE TABLE IF NOT EXISTS receipts(
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        doner_id INT NOT NULL,
+        doner_name VARCHAR(100),
+        money DECIMAL(10,2) NOT NULL,
+        clothes INT NOT NULL,
+        foods INT NOT NULL
+    )
+");
+
+mysqli_query($conn, "
+    CREATE TABLE IF NOT EXISTS acknowledgment(
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        message VARCHAR(200) NOT NULL
+    )
+");
+
+
 ?>

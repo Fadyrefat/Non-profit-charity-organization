@@ -8,6 +8,8 @@ require_once 'PaymentMethods/DonationStrategy.php';
 require_once 'PaymentMethods/CashStrategy.php';
 require_once 'PaymentMethods/VisaStrategy.php';
 require_once 'PaymentMethods/CheckStrategy.php';
+require_once 'AdapterPattern/PaypalAdapter.php';
+require_once 'AdapterPattern/PaypalService.php';
 
 class DonationFactory {
     public static function createDonation(array $data): Donation {
@@ -30,18 +32,22 @@ class DonationFactory {
                 $paymentstrategy=new CheckStrategy();
             elseif($paymentmethod=="cash")
                 $paymentstrategy=new CashStrategy();
+            elseif($paymentmethod=="paypal"){
+                $paymentservice= new PaypalService();
+                $paymentstrategy=new PaypalAdapter($paymentservice);
+            }
 
             $donations[] = new MoneyDonation($donor_id,$paymentstrategy,(float)$data['money_amount']);
         }
 
         if (count($donations) === 1) {
-            return $donations[0]; // Single donation
+            return $donations[0]; 
         } else {
             $group = new CompositeDonation($donor_id);
             foreach ($donations as $donation) {
                 $group->add($donation);
             }
-            return $group; // Composite donation
+            return $group; 
         }
     }
 }

@@ -1,30 +1,30 @@
 <?php
 class Inventory {
-    private $conn;
 
-    public function __construct($db) {
-        $this->conn = $db;
+    public function __construct() {
+        
     }
 
     // Get current inventory
-    public function getInventory() {
+    public static function getInventory() {
+        $conn=Database::getInstance()->getConnection();
         $sql = "SELECT * FROM inventory WHERE id = 1";
-        $result = mysqli_query($this->conn, $sql);
+        $result = mysqli_query($conn, $sql);
         return mysqli_fetch_assoc($result);
     }
 
     // Add donation
-    public function addDonation($food, $money, $clothes) {
+    public static function addDonation($food, $money, $clothes) {
         $food = (int)$food;
         $money = (float)$money;
         $clothes = (int)$clothes;
-
+$conn=Database::getInstance()->getConnection();
         $sql = "UPDATE inventory 
                 SET food = food + $food, 
                     money = money + $money, 
                     clothes = clothes + $clothes 
                 WHERE id = 1";
-        return mysqli_query($this->conn, $sql);
+        return mysqli_query($conn, $sql);
     }
 
     // Deduct beneficiary request
@@ -32,13 +32,13 @@ class Inventory {
         $food = (int)$food;
         $money = (float)$money;
         $clothes = (int)$clothes;
-
+$conn=Database::getInstance()->getConnection();
         $sql = "UPDATE inventory 
                 SET food = food - $food, 
                     money = money - $money, 
                     clothes = clothes - $clothes 
                 WHERE id = 1";
-        return mysqli_query($this->conn, $sql);
+        return mysqli_query($conn, $sql);
     }
 }
 ?>
