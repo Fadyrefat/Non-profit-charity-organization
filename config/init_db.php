@@ -13,6 +13,16 @@ mysqli_query($conn, "
     )
 ");
 
+// Create action_logs table for logging system actions
+mysqli_query($conn, "
+    CREATE TABLE IF NOT EXISTS action_logs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        action VARCHAR(255) NOT NULL,
+        method VARCHAR(10) NOT NULL,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+");
+
 // Create donations table
 /*mysqli_query($conn, "
     CREATE TABLE IF NOT EXISTS donations (
