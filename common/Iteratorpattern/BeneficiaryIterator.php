@@ -1,7 +1,7 @@
 <?php 
-/*require_once 'Iterator';
+require_once 'IteratorInterface.php';
 
-class BeneficiaryIterator implements Iterator{
+class BeneficiaryIterator implements IteratorInterface{
 
 private array $beneficiaries = [];
 private $position =0;

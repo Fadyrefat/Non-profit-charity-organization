@@ -32,11 +32,16 @@ if ($requestMethod === 'GET') {
             (new DonationController())->DonationForm();
             break;
         case 'showDonors':
-            require_once 'controllers/DonationController.php';
-            $controller = new DonationController();
-            $controller->showDonors();
-            break;
-
+             require_once 'controllers/DonationController.php';
+             $controller=new DonationController();
+             $controller->showDonors();
+             break;
+        case 'showInventory':
+             require_once 'controllers/DonationController.php';
+             $controller=new DonationController();
+             $controller->showInventory();
+             break;
+        
         // ===== Volunteer Department =====
         case 'VolunteerDepartment':
             require_once 'controllers/VolunteerController.php';

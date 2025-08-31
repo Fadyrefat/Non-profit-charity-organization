@@ -1,5 +1,6 @@
 <?php
-class Donor {
+require_once __DIR__ . '/../../common/observer.php';
+class Donor implements Observer{
     private $id;
     private $name;
     private $email;
@@ -64,7 +65,11 @@ public static function getDonors() {
             return new Donor($row['id'], $row['name'], $row['email'], $row['phone']);
         }
 
-        return null; // return null if donor not found
+        return null; 
+    }
+
+    public function update(): void{
+        
     }
 
 } 
