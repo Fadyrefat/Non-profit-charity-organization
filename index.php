@@ -105,6 +105,39 @@ if ($requestMethod === 'GET') {
             }
             break;
 
+        case 'showDistributions':
+            require_once "controllers/BeneficiaryController.php";
+            (new BeneficiaryController())->showDistributions();
+            break;
+
+        // ===== Feedback =====
+        case 'addFeedback': // show form
+            if (isset($_GET['request_id']) && isset($_GET['beneficiary_id'])) {
+                require_once "controllers/BeneficiaryController.php";
+                (new BeneficiaryController())->addFeedbackForm(
+                    (int)$_GET['request_id'],
+                    (int)$_GET['beneficiary_id']
+                );
+            } else {
+                echo "Missing request_id or beneficiary_id for feedback.";
+            }
+            break;
+
+        case 'showFeedbacks':
+            require_once "controllers/BeneficiaryController.php";
+            (new BeneficiaryController())->showFeedbacks();
+            break;
+
+        // ===== Reports =====
+        case 'generateReport':
+            if (isset($_GET['reportType'])) {
+                require_once "controllers/BeneficiaryController.php";
+                (new BeneficiaryController())->generateReport($_GET['reportType']);
+            } else {
+                echo "Please select a report type.";
+            }
+            break;
+
         default:
             echo "404 - Page not found (GET)";
     }
@@ -142,6 +175,11 @@ elseif ($requestMethod === 'POST') {
         case 'addRequest':
             require_once 'controllers/BeneficiaryController.php';
             (new BeneficiaryController())->addRequest($_POST);
+            break;
+
+        case 'addFeedback': // 🔹 handle feedback form submission
+            require_once 'controllers/BeneficiaryController.php';
+            (new BeneficiaryController())->addFeedback($_POST);
             break;
 
         default:

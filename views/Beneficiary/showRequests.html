@@ -11,12 +11,22 @@
     th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
     th { background: #007BFF; color: white; }
     tr:nth-child(even) { background: #f9f9f9; }
+
+    /* Action buttons */
     .buttons { text-align: center; margin-top: 20px; }
     .buttons button, .action-btn { margin: 3px; padding: 5px 10px; font-size: 12px; cursor: pointer; border: none; border-radius: 5px; }
     .approve { background-color: #28a745; color: white; }
     .reject { background-color: #dc3545; color: white; }
     .complete { background-color: #17a2b8; color: white; }
     .action-btn:hover { opacity: 0.9; }
+
+    /* Status styles */
+    .status { font-weight: bold; padding: 5px 10px; border-radius: 5px; color: white; }
+    .status.Pending { background-color: #ffc107; }    /* Yellow */
+    .status.Approved { background-color: #28a745; }   /* Green */
+    .status.Rejected { background-color: #dc3545; }   /* Red */
+    .status.Completed { background-color: #17a2b8; }  /* Blue */
+
     .back { display: block; margin-top: 20px; text-align: center; }
   </style>
 </head>
@@ -41,7 +51,7 @@
           <td><?= htmlspecialchars($req['request_type']) ?></td>
           <td><?= htmlspecialchars($req['number']) ?></td>
           <td><?= htmlspecialchars($req['reason']) ?></td>
-          <td class="status"><?= htmlspecialchars($req['state']) ?></td>
+          <td class="status <?= htmlspecialchars($req['state']) ?>"><?= htmlspecialchars($req['state']) ?></td>
           <td><?= htmlspecialchars($req['created_at']) ?></td>
           <td>
             <?php if($req['state'] === 'Pending'): ?>
@@ -64,28 +74,14 @@
 
   <!-- Filter Buttons -->
   <div class="buttons">
-    <button onclick="filterStatus('Pending')">Pending Requests</button>
-    <button onclick="filterStatus('Rejected')">Rejected Requests</button>
-    <button onclick="filterStatus('Approved')">Approved Requests</button>
-    <button onclick="filterStatus('Completed')">Completed Requests</button>
-    <button onclick="filterStatus('All')">All Requests</button>
+      <a href="index.php?action=showRequests&state=Pending" class="action-btn" style="background:#ffc107;color:white;">Pending Requests</a>
+      <a href="index.php?action=showRequests&state=Rejected" class="action-btn" style="background:#dc3545;color:white;">Rejected Requests</a>
+      <a href="index.php?action=showRequests&state=Approved" class="action-btn" style="background:#28a745;color:white;">Approved Requests</a>
+      <a href="index.php?action=showRequests&state=Completed" class="action-btn" style="background:#17a2b8;color:white;">Completed Requests</a>
+      <a href="index.php?action=showRequests&state=All" class="action-btn" style="background:#6c757d;color:white;">All Requests</a>
   </div>
 
-  <a href="index.php?action=BeneficiaryDepartment" class="back">⬅ Back to Dashboard</a>
 
-  <script>
-    function filterStatus(status) {
-      const table = document.getElementById('requestsTable');
-      const rows = table.getElementsByTagName('tr');
-      for (let i = 1; i < rows.length; i++) {
-        const statusCell = rows[i].getElementsByClassName('status')[0];
-        if (status === 'All' || statusCell.textContent === status) {
-          rows[i].style.display = '';
-        } else {
-          rows[i].style.display = 'none';
-        }
-      }
-    }
-  </script>
+  <a href="index.php?action=BeneficiaryDepartment" class="back">⬅ Back to Dashboard</a>
 </body>
 </html>
