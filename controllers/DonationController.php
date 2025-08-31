@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
     require_once 'models/donation/DonationFactory.php';
     require_once 'models/donation/DonationDecorators/ReceiptDecorator.php';
     require_once 'models/donation/DonationDecorators/AckDecorator.php';

@@ -4,6 +4,11 @@ require_once 'config/Database.php';
 // 🔄 Setup database if needed
 $conn = Database::getInstance()->getConnection();
 require_once __DIR__ . '/config/init_db.php';
+$tableCheck = mysqli_query($conn, "SHOW TABLES LIKE 'donors'");
+
+if (mysqli_num_rows($tableCheck) == 0) {
+    require_once __DIR__ . '/config/init_db.php';
+}
 
 // 🌐 Detect request method and action
 $requestMethod = $_SERVER['REQUEST_METHOD'];
@@ -105,6 +110,25 @@ if ($requestMethod === 'GET') {
             }
             break;
 
+        //Event Management
+        case 'EventDepartment':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->index();
+            break;
+
+        case 'createEvent':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->create();
+            break;
+
+        case 'showEvent':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->show($_GET['id']);
+            break;
+
         default:
             echo "404 - Page not found (GET)";
     }
@@ -142,6 +166,37 @@ elseif ($requestMethod === 'POST') {
         case 'addRequest':
             require_once 'controllers/BeneficiaryController.php';
             (new BeneficiaryController())->addRequest($_POST);
+            break;
+
+        // Event Management
+        case 'storeEvent':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->store($_POST);
+            break;
+
+        case 'registerAttendee':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->register($_POST);
+            break;
+
+        case 'bookTicket':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->bookTicket($_POST);
+            break;
+
+        case 'updateAttendance':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->updateAttendance($_POST);
+            break;
+
+        case 'sendReminder':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->sendReminder($_POST);
             break;
 
         default:
