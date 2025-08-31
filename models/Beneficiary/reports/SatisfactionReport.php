@@ -5,7 +5,7 @@ class SatisfactionReport implements ReportStrategy {
     public function generateReport(mysqli $conn): array {
         $sql = "
             SELECT AVG(satisfaction_rating) as avg_rating
-            FROM beneficiary_feedback
+            FROM beneficiaryFeedback
             WHERE reported_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH)
         ";
         $result = $conn->query($sql);

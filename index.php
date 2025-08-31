@@ -41,7 +41,7 @@ if ($requestMethod === 'GET') {
              $controller=new DonationController();
              $controller->showInventory();
              break;
-
+        
         // ===== Volunteer Department =====
         case 'VolunteerDepartment':
             require_once 'controllers/VolunteerController.php';
@@ -97,21 +97,21 @@ if ($requestMethod === 'GET') {
         case 'approveRequest':
             if (isset($_GET['id'])) {
                 require_once "controllers/BeneficiaryController.php";
-                (new BeneficiaryController())->approveRequest((int)$_GET['id']);
+                (new BeneficiaryController())->approveRequest((int) $_GET['id']);
             }
             break;
 
         case 'rejectRequest':
             if (isset($_GET['id'])) {
                 require_once "controllers/BeneficiaryController.php";
-                (new BeneficiaryController())->rejectRequest((int)$_GET['id']);
+                (new BeneficiaryController())->rejectRequest((int) $_GET['id']);
             }
             break;
 
         case 'completeRequest':
             if (isset($_GET['id'])) {
                 require_once "controllers/BeneficiaryController.php";
-                (new BeneficiaryController())->completeRequest((int)$_GET['id']);
+                (new BeneficiaryController())->completeRequest((int) $_GET['id']);
             }
             break;
 
@@ -125,8 +125,8 @@ if ($requestMethod === 'GET') {
             if (isset($_GET['request_id']) && isset($_GET['beneficiary_id'])) {
                 require_once "controllers/BeneficiaryController.php";
                 (new BeneficiaryController())->addFeedbackForm(
-                    (int)$_GET['request_id'],
-                    (int)$_GET['beneficiary_id']
+                    (int) $_GET['request_id'],
+                    (int) $_GET['beneficiary_id']
                 );
             } else {
                 echo "Missing request_id or beneficiary_id for feedback.";
@@ -146,6 +146,25 @@ if ($requestMethod === 'GET') {
             } else {
                 echo "Please select a report type.";
             }
+            break;
+
+        //Event Management
+        case 'EventDepartment':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->index();
+            break;
+
+        case 'createEvent':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->create();
+            break;
+
+        case 'showEvent':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->show($_GET['id']);
             break;
 
         default:
@@ -190,6 +209,37 @@ elseif ($requestMethod === 'POST') {
         case 'addFeedback': // 🔹 handle feedback form submission
             require_once 'controllers/BeneficiaryController.php';
             (new BeneficiaryController())->addFeedback($_POST);
+            break;
+
+        // Event Management
+        case 'storeEvent':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->store($_POST);
+            break;
+
+        case 'registerAttendee':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->register($_POST);
+            break;
+
+        case 'bookTicket':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->bookTicket($_POST);
+            break;
+
+        case 'updateAttendance':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->updateAttendance($_POST);
+            break;
+
+        case 'sendReminder':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->sendReminder($_POST);
             break;
 
         default:

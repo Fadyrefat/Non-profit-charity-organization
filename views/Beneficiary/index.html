@@ -4,58 +4,28 @@
   <meta charset="UTF-8">
   <title>Charity Organization - Dashboard</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f7fa; text-align: center; padding: 50px; }
-    h1 { margin-bottom: 30px; color: #333; }
-    .btn-container { 
-      display: grid; 
-      grid-template-columns: repeat(3, 200px); /* updated to fit more buttons */
-      gap: 20px; 
-      justify-content: center; 
-      margin-bottom: 40px;
-    }
-    .btn { 
-      display: inline-block; 
-      padding: 15px 20px; 
-      font-size: 16px; 
-      color: #fff; 
-      background: #007BFF; 
-      border-radius: 8px; 
-      text-decoration: none; 
-    }
-    .btn:hover { background: #0056b3; }
-    .report-box { margin-top: 20px; }
-    select { 
-      padding: 10px; 
-      font-size: 16px; 
-      border-radius: 6px; 
-      border: 1px solid #ccc; 
-      margin-right: 10px;
-    }
-    .btn-report { 
-      padding: 10px 15px; 
-      font-size: 16px; 
-      color: #fff; 
-      background: #28a745; 
-      border: none; 
-      border-radius: 6px; 
-      cursor: pointer;
-    }
-    .btn-report:hover { background: #1e7e34; }
+    /* ===== UNIFIED STYLE ===== */
+    body { font-family: Arial, sans-serif; background: #f4f7fa; color: #333; padding: 30px; text-align: center; }
+    h1 { margin-bottom: 25px; }
+    .btn-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; justify-content: center; margin-bottom: 30px; }
+    .btn, .btn-report { display: inline-block; padding: 12px 20px; font-size: 16px; color: #fff; background: #007BFF; border: none; border-radius: 6px; text-decoration: none; cursor: pointer; transition: background 0.3s; margin: 5px 2px; }
+    .btn:hover, .btn-report:hover { background: #0056b3; }
+    .report-box { max-width: 500px; margin: 20px auto; }
+    select { padding: 10px; font-size: 16px; border-radius: 6px; border: 1px solid #ccc; margin-right: 10px; }
   </style>
 </head>
 <body>
   <h1>Welcome to our Beneficiary Department</h1>
-  
+
   <div class="btn-container">
     <a href="index.php?action=addBeneficiary" class="btn">Add Beneficiary</a>
     <a href="index.php?action=showBeneficiaries" class="btn">Show Beneficiaries</a>
     <a href="index.php?action=addRequest" class="btn">Add Request</a>
     <a href="index.php?action=showRequests" class="btn">Show Requests</a>
     <a href="index.php?action=showDistributions" class="btn">Show Distributions</a>
-    <a href="index.php?action=showFeedbacks" class="btn">Show Feedbacks</a> <!-- ✅ NEW BUTTON -->
+    <a href="index.php?action=showFeedbacks" class="btn">Show Feedbacks</a>
   </div>
 
-  <!-- Report Selector -->
   <div class="report-box">
     <form method="GET" action="index.php">
       <input type="hidden" name="action" value="generateReport">
@@ -67,6 +37,5 @@
       <button type="submit" class="btn-report">Generate Report</button>
     </form>
   </div>
-
 </body>
 </html>

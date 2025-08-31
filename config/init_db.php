@@ -8,7 +8,7 @@ mysqli_query($conn, "
     CREATE TABLE IF NOT EXISTS donors (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
-        email VARCHAR(100) UNIQUE,
+        email VARCHAR(100) UNIQUE NOT NULL,
         phone VARCHAR(20) NOT NULL
     )
 ");
@@ -174,7 +174,7 @@ mysqli_query($conn, "
 ");
 
 mysqli_query($conn, "
-    CREATE TABLE  IF NOT EXISTS beneficiary_feedback (
+    CREATE TABLE IF NOT EXISTS beneficiaryFeedback (
         id INT AUTO_INCREMENT PRIMARY KEY,
         request_id INT NOT NULL,
         beneficiary_id INT NOT NULL,
@@ -182,18 +182,11 @@ mysqli_query($conn, "
         outcome_notes TEXT,
         reported_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (request_id) REFERENCES requests(id),
-        FOREIGN KEY (beneficiary_id) REFERENCES beneficiaries(id)
+        FOREIGN KEY (beneficiary_id) REFERENCES beneficiaries(id),
+        UNIQUE KEY unique_feedback_per_request (request_id, beneficiary_id)
     );
 ");
 
-mysqli_query($conn, "
-    CREATE TABLE  IF NOT EXISTS program_metrics (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        metric_name VARCHAR(100),
-        metric_value DECIMAL(10,2),
-        collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-");
 
 
 mysqli_query($conn, "

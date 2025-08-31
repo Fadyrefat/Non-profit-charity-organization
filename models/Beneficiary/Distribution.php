@@ -1,41 +1,74 @@
 <?php
-
 class Distribution {
+    public int $id;
+    public int $requestId;
+    public int $beneficiaryId;
+    public int $quantity;
+    public string $distributedAt;
+    public string $requestType;
+    public string $beneficiaryName;
 
-    private mysqli $conn;
-
-    public function __construct(mysqli $conn) {
-        $this->conn = $conn;
+    public function __construct(
+        int $id,
+        int $requestId,
+        int $beneficiaryId,
+        int $quantity,
+        string $distributedAt,
+        string $requestType,
+        string $beneficiaryName
+    ) {
+        $this->id = $id;
+        $this->requestId = $requestId;
+        $this->beneficiaryId = $beneficiaryId;
+        $this->quantity = $quantity;
+        $this->distributedAt = $distributedAt;
+        $this->requestType = $requestType;
+        $this->beneficiaryName = $beneficiaryName;
     }
 
-    // Insert a new distribution record
-    public function createDistribution(int $requestId, int $beneficiaryId, string $resourceType, int $quantity, string $distributedBy): bool {
-        $stmt = $this->conn->prepare("
-            INSERT INTO distributions (request_id, beneficiary_id, resource_type, quantity, distributed_by)
-            VALUES (?, ?, ?, ?, ?)
-        ");
-        $stmt->bind_param("iisds", $requestId, $beneficiaryId, $resourceType, $quantity, $distributedBy);
-        return $stmt->execute();
-    }
+    public function getId(): int { return $this->id; }
+    public function getRequestId(): int { return $this->requestId; }
+    public function getBeneficiaryId(): int { return $this->beneficiaryId; }
+    public function getQuantity(): int { return $this->quantity; }
+    public function getDistributedAt(): string { return $this->distributedAt; }
+    public function getRequestType(): string { return $this->requestType; }
+    public function getBeneficiaryName(): string { return $this->beneficiaryName; }
 
-    // Fetch all distributions
-    public static function getDistributions(): array {
+    public static function getAll(): array {
         $conn = Database::getInstance()->getConnection();
+
         $sql = "
             SELECT 
                 d.id,
                 d.request_id,
                 d.beneficiary_id,
-                b.name AS beneficiary_name,
-                r.request_type,
                 d.quantity,
-                d.distributed_at
+                d.distributed_at,
+                r.request_type,
+                b.name AS beneficiary_name
             FROM distributions d
-            JOIN beneficiaries b ON d.beneficiary_id = b.id
             JOIN requests r ON d.request_id = r.id
+            JOIN beneficiaries b ON d.beneficiary_id = b.id
             ORDER BY d.distributed_at DESC
         ";
+
         $result = $conn->query($sql);
-        return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        $items = [];
+
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $items[] = new self(
+                    (int)$row['id'],
+                    (int)$row['request_id'],
+                    (int)$row['beneficiary_id'],
+                    (int)$row['quantity'],
+                    $row['distributed_at'],
+                    $row['request_type'] ?? '',
+                    $row['beneficiary_name'] ?? ''
+                );
+            }
+        }
+
+        return $items;
     }
 }
