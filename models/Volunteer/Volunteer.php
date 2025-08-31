@@ -6,8 +6,9 @@ require_once __DIR__ . '/states/ContributorState.php';
 require_once __DIR__ . '/states/SupporterState.php';
 require_once __DIR__ . '/states/LeaderState.php';
 require_once __DIR__ . '/states/ChampionState.php';
+require_once __DIR__ . '../../models/Event_Management/Observer.php';
 
-class Volunteer
+class Volunteer #implements Observer
 {
     private int $id;
     private string $name;
@@ -25,7 +26,12 @@ class Volunteer
         $this->hours = $hours;
         $this->state = $state ?? new HelperState($this);
     }
+    // public function update($event, $payload): void
+    // {
+    //     $this->hours += $payload['hours'] ?? 0;
+    //     $this->state->checkForUpgrade();
 
+    // }
 
     public function getId(): int
     {

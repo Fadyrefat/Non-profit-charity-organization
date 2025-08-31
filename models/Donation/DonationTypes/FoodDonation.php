@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../Donation.php';
-
+require_once __DIR__ . '/../../Inventory.php';
 class FoodDonation extends Donation{
 
 private string $description;
@@ -21,9 +21,10 @@ $sql = "INSERT INTO fooddonations (description, amount, donor_id)
              VALUES ('{$this->description}', {$this->amount}, {$donor_id})";
 
 mysqli_query($conn, $sql);
+Inventory::addDonation($this->amount,0.0,0);
 }
 
-public function getAmount(): float {
+public function getAmount(): int {
         return $this->amount;
     }
 

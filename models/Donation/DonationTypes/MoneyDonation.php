@@ -22,8 +22,9 @@ return $this->paymentmethod;
 public function setstrategy(DonationStrategy $paymentmethod):void{
  $this->paymentmethod=$paymentmethod;
 }
-
-
+public function getAmount(): float {
+        return $this->amount;
+    }
 
 public function donate ():void{
 

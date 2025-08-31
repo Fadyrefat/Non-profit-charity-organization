@@ -2,7 +2,7 @@
     require_once 'models/donation/DonationFactory.php';
     require_once 'models/donation/DonationDecorators/ReceiptDecorator.php';
     require_once 'models/donation/DonationDecorators/AckDecorator.php';
-    
+    require_once __DIR__ . '/../models/Inventory.php';
 class DonationController {
 
     public function Index() {
@@ -27,15 +27,13 @@ class DonationController {
     public function showDonors(){
     require_once __DIR__ . '/../common/iteratorpattern/DonorCollection.php';
     require_once __DIR__ . '/../common/iteratorpattern/DonorIterator.php';
-    require_once __DIR__ . '/../common/iteratorpattern/VolunteerCollection.php';
-    require_once __DIR__ . '/../common/iteratorpattern/VolunteerIterator.php';
 
-    $volunteerCollection=new VolunteerCollection();
-    $volunteerIterator=$volunteerCollection->createIterator();
-    while($volunteerIterator->hasnext()){
-       $volunteer = $volunteerIterator->next();
+    $DonorCollection=new DonorCollection();
+    $DonorIterator=$DonorCollection->createIterator();
+    while($DonorIterator->hasnext()){
+       $Donor= $DonorIterator->next();
        echo "  ";
-       echo $volunteer->getName();
+       echo $Donor->getName();
     }
     }
 
@@ -44,16 +42,20 @@ class DonationController {
           
     $donation = DonationFactory::createDonation($data);
 
-   /* $receipt = isset($_POST['receipt']) ? 1 : 0;
+    $receipt = isset($data['receipt']) ? 1 : 0;
     if($receipt)
-       {$donation = new ReceiptDecorator($donation);}
+       {$donation = new ReceiptDecorator($donation,$data);}
 
-    $ack = isset($_POST['acknowledgment']) ? 1 : 0;
-    if($receipt)
-       {$donation = new AckDecorator($donation);}   */ 
+    $ack = isset($data['acknowledgment']) ? 1 : 0;
+    if($ack)
+       {$donation = new AckDecorator($donation,$data);}   
   
     $donation->donate();
 
     }
 
+public function showInventory(){
+    $Inventory=Inventory::getInventory();
+    require_once 'views/Donation/showInventory.html';
+}
 }
