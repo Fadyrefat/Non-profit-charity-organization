@@ -24,6 +24,22 @@ class DonationController {
         require_once 'views/Donation/addDonation.html';
     }
 
+    public function showDonors(){
+    require_once __DIR__ . '/../common/iteratorpattern/DonorCollection.php';
+    require_once __DIR__ . '/../common/iteratorpattern/DonorIterator.php';
+    require_once __DIR__ . '/../common/iteratorpattern/VolunteerCollection.php';
+    require_once __DIR__ . '/../common/iteratorpattern/VolunteerIterator.php';
+
+    $volunteerCollection=new VolunteerCollection();
+    $volunteerIterator=$volunteerCollection->createIterator();
+    while($volunteerIterator->hasnext()){
+       $volunteer = $volunteerIterator->next();
+       echo "  ";
+       echo $volunteer->getName();
+    }
+    }
+
+
     public function addDonation($data){
           
     $donation = DonationFactory::createDonation($data);

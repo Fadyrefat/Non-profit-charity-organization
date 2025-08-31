@@ -13,8 +13,13 @@ class ChampionState implements VolunteerState
 
     private Volunteer $volunteer;
 
-    public function __construct(Volunteer $volunteer)
-    {
+public function __construct(Volunteer $volunteer = null) {
+    if ($volunteer) {
+        $this->volunteer = $volunteer;
+    }
+}
+
+    public function setVolunteer(Volunteer $volunteer) {
         $this->volunteer = $volunteer;
     }
 
