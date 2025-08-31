@@ -54,8 +54,7 @@ class BeneficiaryController {
     }
 
     public function showAll() {
-        // Unified getAll
-        $beneficiaries = Beneficiary::getAll();
+        $beneficiaries = Beneficiary::getAll(); // returns objects now
         require_once 'views/Beneficiary/showBeneficiaries.html';
     }
 
@@ -76,7 +75,7 @@ class BeneficiaryController {
         $beneficiaries = Beneficiary::getAll();
         $beneficiary = null;
         foreach ($beneficiaries as $b) {
-            if ($b['id'] == $beneficiaryId) {
+            if ($b->getId() == $beneficiaryId) { // use method instead of array
                 $beneficiary = $b;
                 break;
             }
@@ -124,10 +123,10 @@ class BeneficiaryController {
         $distributions = Distribution::getAll();
         $feedbacksList = BeneficiaryFeedback::getAll();
 
-        // Map feedbacks by request_id
+        // Map feedbacks by request_id using object method
         $feedbacks = [];
         foreach ($feedbacksList as $f) {
-            $feedbacks[$f['request_id']] = true;
+            $feedbacks[$f->getRequestId()] = true;
         }
 
         require 'views/Beneficiary/showDistributions.html';
@@ -152,17 +151,11 @@ class BeneficiaryController {
         $rating        = isset($data['satisfaction_rating']) ? (int)$data['satisfaction_rating'] : null;
         $notes         = $data['outcome_notes'] ?? null;
 
-        $feedback = [
-            'request_id' => $requestId,
-            'beneficiary_id' => $beneficiaryId,
-            'satisfaction_rating' => $rating,
-            'outcome_notes' => $notes
-        ];
-
         require_once 'models/beneficiary/BeneficiaryFeedback.php';
 
         try {
-            BeneficiaryFeedback::insert($feedback);
+            $feedback = new BeneficiaryFeedback($requestId, $beneficiaryId, $rating, $notes);
+            $feedback->insert(); // call object's insert method
             header("Location: index.php?action=showFeedbacks");
             exit;
         } catch (Exception $e) {
@@ -174,7 +167,7 @@ class BeneficiaryController {
         require_once 'models/beneficiary/BeneficiaryFeedback.php';
 
         try {
-            $feedbacks = BeneficiaryFeedback::getAll();
+            $feedbacks = BeneficiaryFeedback::getAll(); // returns objects now
             require 'views/Beneficiary/showFeedbacks.html';
         } catch (Exception $e) {
             echo "❌ Failed to fetch feedbacks: " . $e->getMessage();

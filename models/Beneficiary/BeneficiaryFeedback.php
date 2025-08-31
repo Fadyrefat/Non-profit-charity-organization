@@ -77,7 +77,7 @@ class BeneficiaryFeedback
     }
 
 
-    // Beneficiary Feedback
+    // ===== Feedbacks =====
     public static function getAll(): array
     {
         $conn = Database::getInstance()->getConnection();
@@ -91,7 +91,21 @@ class BeneficiaryFeedback
         ";
         $result = $conn->query($sql);
 
-        $items = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        $items = [];
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $items[] = new BeneficiaryFeedback(
+                    $row['request_id'],
+                    $row['beneficiary_id'],
+                    $row['satisfaction_rating'],
+                    $row['outcome_notes'],
+                    $row['id'],
+                    $row['reported_at'],
+                    $row['request_type'],
+                    $row['beneficiary_name']
+                );
+            }
+        }
         return $items;
     }
 

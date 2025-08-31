@@ -3,43 +3,83 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Beneficiaries List</title>
+  <title>Requests List</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f7fa; color: #333; padding: 30px; text-align: center; }
+    body { font-family: Arial, sans-serif; background: #f4f7fa; padding: 30px; text-align: center; color: #333; }
     h2 { margin-bottom: 25px; }
-    table { width: 100%; max-width: 900px; margin: auto; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    th, td { padding: 12px 15px; text-align: center; border-bottom: 1px solid #ddd; }
+    table { width: 90%; margin: auto; border-collapse: collapse; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    th, td { padding: 12px 15px; border: 1px solid #ddd; text-align: center; }
     th { background: #007BFF; color: white; }
+    tr:nth-child(even) { background: #f9f9f9; }
     tr:hover { background: #f1f1f1; }
-    .btn { display: inline-block; padding: 10px 15px; margin: 5px; background: #007BFF; color: white; text-decoration: none; border-radius: 6px; transition: background 0.3s; }
+
+    .action-btn { margin: 3px; padding: 6px 10px; font-size: 13px; border: none; border-radius: 5px; color: white; cursor: pointer; text-decoration: none; display: inline-block; }
+    .approve { background-color: #28a745; }
+    .reject { background-color: #dc3545; }
+    .complete { background-color: #17a2b8; }
+    .action-btn:hover { opacity: 0.9; }
+
+    .status { font-weight: bold; padding: 5px 10px; border-radius: 5px; color: white; }
+    .status.Pending { background-color: #ffc107; }
+    .status.Approved { background-color: #28a745; }
+    .status.Rejected { background-color: #dc3545; }
+    .status.Completed { background-color: #17a2b8; }
+
+    .filter-btns { margin: 20px 0; }
+    .filter-btns a { display: inline-block; margin: 5px; padding: 8px 12px; color: white; border-radius: 6px; text-decoration: none; transition: opacity 0.3s; }
+    .filter-btns a:hover { opacity: 0.85; }
+
+    .btn { display: inline-block; padding: 10px 15px; margin: 10px 0; background: #007BFF; color: white; text-decoration: none; border-radius: 6px; transition: background 0.3s; }
     .btn:hover { background: #0056b3; }
-    .actions { margin-top: 20px; }
   </style>
 </head>
 <body>
-  <h2>Beneficiaries List</h2>
+  <h2>Requests</h2>
   <table>
     <tr>
       <th>ID</th>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Phone</th>
-      <th>Address</th>
+      <th>Beneficiary</th>
+      <th>Type</th>
+      <th>Number</th>
+      <th>Reason</th>
+      <th>Status</th>
+      <th>Created At</th>
+      <th>Actions</th>
     </tr>
-    <?php if (!empty($beneficiaries)): ?>
-      <?php foreach ($beneficiaries as $b): ?>
+    <?php if(!empty($requests)): ?>
+      <?php foreach($requests as $req): ?>
         <tr>
-          <td><?= htmlspecialchars($b['id']) ?></td>
-          <td><?= htmlspecialchars($b['name']) ?></td>
-          <td><?= htmlspecialchars($b['email']) ?></td>
-          <td><?= htmlspecialchars($b['phone']) ?></td>
-          <td><?= htmlspecialchars($b['address']) ?></td>
+          <td><?= htmlspecialchars($req->id) ?></td>
+          <td><?= htmlspecialchars($req->beneficiary->name) ?></td>
+          <td><?= htmlspecialchars($req->requestType) ?></td>
+          <td><?= htmlspecialchars($req->number) ?></td>
+          <td><?= htmlspecialchars($req->reason) ?></td>
+          <td class="status <?= htmlspecialchars($req->state) ?>"><?= htmlspecialchars($req->state) ?></td>
+          <td><?= htmlspecialchars($req->createdAt) ?></td>
+          <td>
+            <?php if($req->state === 'Pending'): ?>
+              <a href="index.php?action=approveRequest&id=<?= $req->id ?>" class="action-btn approve">Approve</a>
+              <a href="index.php?action=rejectRequest&id=<?= $req->id ?>" class="action-btn reject">Reject</a>
+            <?php elseif($req->state === 'Approved'): ?>
+              <a href="index.php?action=completeRequest&id=<?= $req->id ?>" class="action-btn complete">Complete</a>
+            <?php else: ?>
+              -
+            <?php endif; ?>
+          </td>
         </tr>
       <?php endforeach; ?>
     <?php else: ?>
-      <tr><td colspan="5">No beneficiaries found.</td></tr>
+      <tr><td colspan="8">No requests found.</td></tr>
     <?php endif; ?>
   </table>
+
+  <div class="filter-btns">
+    <a href="index.php?action=showRequests&state=Pending" style="background:#ffc107;">Pending</a>
+    <a href="index.php?action=showRequests&state=Rejected" style="background:#dc3545;">Rejected</a>
+    <a href="index.php?action=showRequests&state=Approved" style="background:#28a745;">Approved</a>
+    <a href="index.php?action=showRequests&state=Completed" style="background:#17a2b8;">Completed</a>
+    <a href="index.php?action=showRequests&state=All" style="background:#6c757d;">All</a>
+  </div>
 
   <div class="actions">
     <a href="index.php?action=BeneficiaryDepartment" class="btn">⬅ Back to Dashboard</a>
