@@ -36,16 +36,13 @@
           <td><?= htmlspecialchars($d['quantity']) ?></td>
           <td><?= htmlspecialchars($d['distributed_at']) ?></td>
           <td>
-            <?php
-              // Check if feedback already exists for this request
-              $hasFeedback = isset($feedbacks[$d['request_id']]) && $feedbacks[$d['request_id']];
-            ?>
-            <?php if (!$hasFeedback): ?>
-              <a href="index.php?action=addFeedback&request_id=<?= urlencode($d['request_id']) ?>&beneficiary_id=<?= urlencode($d['beneficiary_id']) ?>" class="btn">➕ Add Feedback</a>
+            <?php if (!isset($feedbacks[$d['request_id']])): ?>
+                <a href="index.php?action=addFeedback&request_id=<?= urlencode($d['request_id']) ?>&beneficiary_id=<?= urlencode($d['beneficiary_id']) ?>" class="btn">➕ Add Feedback</a>
             <?php else: ?>
-              ✅ Feedback Added
+                <span>✅ Feedback Added</span>
             <?php endif; ?>
-          </td>
+        </td>
+          
         </tr>
       <?php endforeach; ?>
     <?php else: ?>

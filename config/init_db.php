@@ -187,14 +187,6 @@ mysqli_query($conn, "
     );
 ");
 
-mysqli_query($conn, "
-    CREATE TABLE  IF NOT EXISTS program_metrics (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        metric_name VARCHAR(100),
-        metric_value DECIMAL(10,2),
-        collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-");
 
 
 mysqli_query($conn, "

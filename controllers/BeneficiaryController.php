@@ -53,22 +53,11 @@ class BeneficiaryController {
     }
 
     public function showAll() {
-        $result = $this->conn->query("SELECT * FROM beneficiaries ORDER BY id DESC");
-
-        $beneficiaries = [];
-        while ($row = $result->fetch_assoc()) {
-            $beneficiaries[] = new Beneficiary(
-                $row['name'],
-                $row['email'],
-                $row['phone'],
-                $row['address'] ?? '',
-                $row['id']
-                
-            );
-        }
-
+        // Use the model's method to get all beneficiaries
+        $beneficiaries = Beneficiary::getBeneficiaries();
         require_once 'views/Beneficiary/showBeneficiaries.html';
     }
+
 
     // ---------------------------- Beneficiary Requests ----------------------------
     public function addRequestForm() {
@@ -94,28 +83,12 @@ class BeneficiaryController {
         header("Location: index.php?action=showRequests");
         exit;
     }
-
     public function showRequests() {
         $stateFilter = $_GET['state'] ?? 'All';
-        $sql = "SELECT r.id, b.name AS beneficiary_name, r.request_type, r.number, r.reason, r.state, r.created_at
-                FROM requests r
-                JOIN beneficiaries b ON r.beneficiary_id = b.id";
-
-        if ($stateFilter !== 'All') {
-            $sql .= " WHERE r.state = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("s", $stateFilter);
-            $stmt->execute();
-            $result = $stmt->get_result();
-        } else {
-            $result = $this->conn->query($sql);
-        }
-
-        $requests = [];
-        while ($row = $result->fetch_assoc()) $requests[] = $row;
-
+        $requests = $this->requestManager->getAllRequests($stateFilter);
         require_once 'views/Beneficiary/showRequests.html';
     }
+
 
     // ---------------------------- Approve / Reject / Complete ----------------------------
     public function approveRequest($requestId) {
@@ -136,7 +109,7 @@ class BeneficiaryController {
         exit;
     }
 
-        public function showDistributions() {
+    public function showDistributions() {
         require_once 'models/Beneficiary/Distribution.php';
         require_once 'models/Beneficiary/BeneficiaryFeedback.php';
 
@@ -152,6 +125,7 @@ class BeneficiaryController {
 
         require 'views/Beneficiary/showDistributions.html';
     }
+
 
 
     // ---------------------------- Reports ----------------------------
