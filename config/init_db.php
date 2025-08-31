@@ -160,14 +160,13 @@ mysqli_query($conn, "
 ");
 
 
-// Notifications table (for Observer simulation)
 mysqli_query($conn, "
     CREATE TABLE IF NOT EXISTS notifications (
         id INT AUTO_INCREMENT PRIMARY KEY,
         event_id INT NOT NULL,
-        recipient VARCHAR(255),
-        channel ENUM('email','sms','whatsapp') NOT NULL,
-        message TEXT,
+        recipient VARCHAR(255) NOT NULL,
+        channel VARCHAR(20) NOT NULL,
+        message TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
     )
