@@ -61,6 +61,8 @@ mysqli_query($conn, "
     CREATE TABLE IF NOT EXISTS beneficiaries (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
+        email VARCHAR(100) UNIQUE NOT NULL,
+        phone VARCHAR(20) NOT NULL,
         address VARCHAR(255) NOT NULL
     )
 ");
@@ -110,6 +112,64 @@ mysqli_query($conn, "
         state ENUM('Pending','Approved','Rejected','Completed') DEFAULT 'Pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (beneficiary_id) REFERENCES beneficiaries(id) ON DELETE CASCADE
+    )
+");
+
+
+// Event Management
+
+mysqli_query($conn, "
+    CREATE TABLE IF NOT EXISTS events (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        type ENUM('workshop','fundraiser','outreach') NOT NULL,
+        start_datetime DATETIME NOT NULL,
+        end_datetime DATETIME NULL,
+        capacity INT DEFAULT 0,
+        location VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+");
+
+
+mysqli_query($conn, "
+    CREATE TABLE IF NOT EXISTS attendees (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        event_id INT NOT NULL,
+        user_type ENUM('donor','volunteer','beneficiary') NOT NULL,
+        user_id INT NOT NULL,
+        ticket_type ENUM('General','VIP','VIP+') DEFAULT 'General',
+        reminder_methods SET('email','sms','whatsapp') DEFAULT NULL,
+        checked_in TINYINT(1) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
+    )
+");
+
+
+mysqli_query($conn, "
+    CREATE TABLE IF NOT EXISTS event_logs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        event_id INT NOT NULL,
+        action VARCHAR(100),
+        payload TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
+    )
+");
+
+
+// Notifications table (for Observer simulation)
+mysqli_query($conn, "
+    CREATE TABLE IF NOT EXISTS notifications (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        event_id INT NOT NULL,
+        recipient VARCHAR(255),
+        channel ENUM('email','sms','whatsapp') NOT NULL,
+        message TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
     )
 ");
 ?>
