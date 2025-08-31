@@ -10,18 +10,19 @@ class Beneficiary
 
     public function __construct($name, $email, $phone, $address = null, $id = null)
     {
-        $this->id = $id;
-        $this->name = $name;
-        $this->email = $email;
-        $this->phone = $phone;
+        $this->id      = $id;
+        $this->name    = $name;
+        $this->email   = $email;
+        $this->phone   = $phone;
         $this->address = $address;
     }
 
-    // ===== Getters and setters =====
+    // ===================== Getters and Setters =====================
     public function getId()
     {
         return $this->id;
     }
+
     public function setId($id)
     {
         $this->id = $id;
@@ -31,6 +32,7 @@ class Beneficiary
     {
         return $this->name;
     }
+
     public function setName($name)
     {
         $this->name = $name;
@@ -40,6 +42,7 @@ class Beneficiary
     {
         return $this->email;
     }
+
     public function setEmail($email)
     {
         $this->email = $email;
@@ -49,6 +52,7 @@ class Beneficiary
     {
         return $this->phone;
     }
+
     public function setPhone($phone)
     {
         $this->phone = $phone;
@@ -58,12 +62,13 @@ class Beneficiary
     {
         return $this->address;
     }
+
     public function setAddress($address)
     {
         $this->address = $address;
     }
 
-    // ===== Insert beneficiary into DB =====
+    // ===================== Insert Beneficiary into DB =====================
     public function insert($conn)
     {
         $stmt = $conn->prepare("
@@ -73,17 +78,19 @@ class Beneficiary
         $stmt->bind_param("ssss", $this->name, $this->email, $this->phone, $this->address);
 
         if ($stmt->execute()) {
-            $this->id = $stmt->insert_id; // get the inserted ID
+            $this->id = $stmt->insert_id; // capture the newly inserted ID
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
-    // ===== Get Beneficiary by ID =====
+    // ===================== Get Beneficiary by ID =====================
     public static function getById($id)
     {
-        if ($id <= 0) return null;
+        if ($id <= 0) {
+            return null;
+        }
 
         $conn = Database::getInstance()->getConnection();
         $stmt = $conn->prepare("
@@ -104,14 +111,15 @@ class Beneficiary
                 $result['id']
             );
         }
+
         return null;
     }
 
-    // ===== Beneficiaries =====
+    // ===================== Get All Beneficiaries =====================
     public static function getAll(): array
     {
-        $conn = Database::getInstance()->getConnection();
-        $sql = "SELECT * FROM beneficiaries ORDER BY id DESC";
+        $conn   = Database::getInstance()->getConnection();
+        $sql    = "SELECT * FROM beneficiaries ORDER BY id DESC";
         $result = $conn->query($sql);
 
         $items = [];
@@ -126,8 +134,8 @@ class Beneficiary
                 );
             }
         }
+
         return $items;
     }
-
 }
 ?>

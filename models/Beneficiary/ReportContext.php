@@ -1,17 +1,22 @@
 <?php
+
 require_once __DIR__ . "/reports/ReportStrategy.php";
 require_once __DIR__ . "/reports/MonthlyReport.php";
 require_once __DIR__ . "/reports/SatisfactionReport.php";
 require_once __DIR__ . "/reports/ResourceUsageReport.php";
 
-class ReportContext {
+class ReportContext
+{
     private ReportStrategy $strategy;
 
-    public function __construct(string $type) {
+    public function __construct(string $type)
+    {
         $this->setStrategyByType($type);
     }
 
-    public function setStrategyByType(string $type) {
+    // ===================== Set Strategy Based on Report Type =====================
+    public function setStrategyByType(string $type)
+    {
         switch (strtolower($type)) {
             case 'satisfaction':
                 $this->strategy = new SatisfactionReport();
@@ -26,7 +31,10 @@ class ReportContext {
         }
     }
 
-    public function generate(mysqli $conn): array {
+    // ===================== Generate Report =====================
+    public function generate(mysqli $conn): array
+    {
         return $this->strategy->generateReport($conn);
     }
 }
+?>

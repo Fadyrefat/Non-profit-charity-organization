@@ -1,16 +1,19 @@
 <?php
 require_once __DIR__ . "/Observer.php";
 
-class ImpactTrackerObserver implements Observer {
+class ImpactTrackerObserver implements Observer
+{
     private mysqli $conn;
 
-    public function __construct(mysqli $conn) {
+    public function __construct(mysqli $conn)
+    {
         $this->conn = $conn;
     }
 
-    // Triggered when a request is completed
-    public function update(int $requestId, string $type, int $number): void {
-        // 🔍 Fetch beneficiary_id from requests
+    // ===================== Triggered when a request is completed =====================
+    public function update(int $requestId, string $type, int $number): void
+    {
+        // Fetch beneficiary_id for this request
         $stmt = $this->conn->prepare("SELECT beneficiary_id FROM requests WHERE id = ?");
         $stmt->bind_param("i", $requestId);
         $stmt->execute();
@@ -24,11 +27,12 @@ class ImpactTrackerObserver implements Observer {
             return;
         }
 
-        // ✅ Insert into distributions
+        // Insert distribution record
         $stmt = $this->conn->prepare("
             INSERT INTO distributions (request_id, beneficiary_id, resource_type, quantity, distributed_at)
             VALUES (?, ?, ?, ?, NOW())
         ");
+
         if ($stmt) {
             $stmt->bind_param("iisi", $requestId, $beneficiaryId, $type, $number);
             $stmt->execute();
