@@ -13,19 +13,27 @@ class BeneficiaryFeedback
     private $request_type;
     private $beneficiary_name;
 
-    public function __construct($request_id, $beneficiary_id, $satisfaction_rating = null, $outcome_notes = null, $id = null, $reported_at = null, $request_type = null, $beneficiary_name = null)
-    {
-        $this->id = $id;
-        $this->request_id = $request_id;
-        $this->beneficiary_id = $beneficiary_id;
+    public function __construct(
+        $request_id,
+        $beneficiary_id,
+        $satisfaction_rating = null,
+        $outcome_notes = null,
+        $id = null,
+        $reported_at = null,
+        $request_type = null,
+        $beneficiary_name = null
+    ) {
+        $this->id                 = $id;
+        $this->request_id         = $request_id;
+        $this->beneficiary_id     = $beneficiary_id;
         $this->satisfaction_rating = $satisfaction_rating;
-        $this->outcome_notes = $outcome_notes;
-        $this->reported_at = $reported_at;
-        $this->request_type = $request_type;
-        $this->beneficiary_name = $beneficiary_name;
+        $this->outcome_notes      = $outcome_notes;
+        $this->reported_at        = $reported_at;
+        $this->request_type       = $request_type;
+        $this->beneficiary_name   = $beneficiary_name;
     }
 
-    // ===== Getters =====
+    // ===================== Getters =====================
     public function getId() { return $this->id; }
     public function getRequestId() { return $this->request_id; }
     public function getBeneficiaryId() { return $this->beneficiary_id; }
@@ -35,7 +43,7 @@ class BeneficiaryFeedback
     public function getRequestType() { return $this->request_type; }
     public function getBeneficiaryName() { return $this->beneficiary_name; }
 
-    // ===== Insert feedback =====
+    // ===================== Insert Feedback =====================
     public function insert()
     {
         $conn = Database::getInstance()->getConnection();
@@ -56,6 +64,7 @@ class BeneficiaryFeedback
             INSERT INTO beneficiaryFeedback (request_id, beneficiary_id, satisfaction_rating, outcome_notes)
             VALUES (?, ?, ?, ?)
         ");
+
         if (!$stmt) {
             throw new Exception("Prepare failed: " . $conn->error);
         }
@@ -76,22 +85,22 @@ class BeneficiaryFeedback
         $stmt->close();
     }
 
-
-    // ===== Feedbacks =====
+    // ===================== Get All Feedbacks =====================
     public static function getAll(): array
     {
         $conn = Database::getInstance()->getConnection();
-        $sql = "
+        $sql  = "
             SELECT f.id, f.request_id, f.beneficiary_id, f.satisfaction_rating, f.outcome_notes, f.reported_at,
-                r.request_type, b.name AS beneficiary_name
+                   r.request_type, b.name AS beneficiary_name
             FROM beneficiaryFeedback f
             JOIN requests r ON f.request_id = r.id
             JOIN beneficiaries b ON f.beneficiary_id = b.id
             ORDER BY f.reported_at DESC
         ";
-        $result = $conn->query($sql);
 
-        $items = [];
+        $result = $conn->query($sql);
+        $items  = [];
+
         if ($result) {
             while ($row = $result->fetch_assoc()) {
                 $items[] = new BeneficiaryFeedback(
@@ -106,11 +115,11 @@ class BeneficiaryFeedback
                 );
             }
         }
+
         return $items;
     }
 
-
-    // ===== Fetch feedback by request_id =====
+    // ===================== Get Feedback by Request ID =====================
     public static function getByRequestId($request_id)
     {
         $conn = Database::getInstance()->getConnection();
@@ -135,3 +144,4 @@ class BeneficiaryFeedback
         return $feedbacks;
     }
 }
+?>

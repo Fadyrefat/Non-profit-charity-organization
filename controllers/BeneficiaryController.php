@@ -1,13 +1,15 @@
 <?php
 
-class BeneficiaryController {
-
+class BeneficiaryController 
+{
     private mysqli $conn;
     private RequestManager $requestManager;
 
-    public function __construct() {
+    public function __construct() 
+    {
         $this->conn = Database::getInstance()->getConnection();
 
+        // Load required models, request types, states, and observers
         require_once 'models/Beneficiary/Beneficiary.php';
         require_once 'models/Beneficiary/RequestFactory.php';
         require_once 'models/Beneficiary/requests/FoodRequest.php';
@@ -25,17 +27,14 @@ class BeneficiaryController {
         $this->requestManager->attach(new ImpactTrackerObserver($this->conn));
     }
 
-    // ---------------------------- Beneficiary Department ----------------------------
-    public function Index() {
-        require_once 'views/Beneficiary/index.html';
-    }
-
     // ---------------------------- Beneficiary CRUD ----------------------------
-    public function addForm() {
+    public function addForm() 
+    {
         require_once 'views/Beneficiary/addBeneficiary.html';
     }
 
-    public function addBeneficiary($data) {
+    public function addBeneficiary(array $data) 
+    {
         $name    = $data['name'] ?? null;
         $email   = $data['email'] ?? null;
         $phone   = $data['phone'] ?? null;
@@ -53,77 +52,136 @@ class BeneficiaryController {
         exit;
     }
 
-    public function showAll() {
-        $beneficiaries = Beneficiary::getAll(); // returns objects now
+    public function showAll() 
+    {
+        $beneficiaries = Beneficiary::getAll();
         require_once 'views/Beneficiary/showBeneficiaries.html';
     }
 
     // ---------------------------- Beneficiary Requests ----------------------------
-    public function addRequestForm() {
+    public function addRequestForm() 
+    {
         $beneficiaries = Beneficiary::getAll();
         require_once 'views/Beneficiary/addRequest.html';
     }
 
-    public function addRequest($data) {
+    public function addRequest(array $data) 
+    {
         $type          = $data['request_type'] ?? '';
         $number        = isset($data['number']) ? (int)$data['number'] : 0;
         $reason        = $data['reason'] ?? '';
         $beneficiaryId = isset($data['beneficiary_id']) ? (int)$data['beneficiary_id'] : 0;
 
-        if ($beneficiaryId <= 0) throw new Exception("Invalid beneficiary ID");
-
-        $beneficiaries = Beneficiary::getAll();
-        $beneficiary = null;
-        foreach ($beneficiaries as $b) {
-            if ($b->getId() == $beneficiaryId) { // use method instead of array
-                $beneficiary = $b;
-                break;
-            }
+        if ($beneficiaryId <= 0) {
+            throw new Exception("Invalid beneficiary ID");
         }
-        if (!$beneficiary) throw new Exception("Beneficiary not found");
 
-        $request = RequestFactory::createRequest($beneficiary, $type, $number, $reason);
-        $limit = 100;
-        $this->requestManager->addRequest($request, $limit);
+        $beneficiary = Beneficiary::getById($beneficiaryId);
+        if (!$beneficiary) {
+            throw new Exception("Beneficiary not found");
+        }
+
+        $request = RequestFactory::createRequest($beneficiary, $type, $number, $reason, $this->conn);
+        $this->requestManager->addRequest($request);
 
         header("Location: index.php?action=showRequests");
         exit;
     }
 
-    public function showRequests() {
+    public function showRequests() 
+    {
         $stateFilter = $_GET['state'] ?? 'All';
         $requests = $this->requestManager->getAll($stateFilter);
         require_once 'views/Beneficiary/showRequests.html';
     }
 
     // ---------------------------- Approve / Reject / Complete ----------------------------
-    public function approveRequest($requestId) {
-        $this->requestManager->approveRequest((int)$requestId);
+    public function approveRequest(int $requestId) 
+    {
+        $request = $this->requestManager->getRequestById($requestId);
+        if ($request) {
+            $request->setConnection($this->conn);
+            $request->approve();
+        }
+
         header("Location: index.php?action=showRequests");
         exit;
     }
 
-    public function rejectRequest($requestId) {
-        $this->requestManager->rejectRequest((int)$requestId);
+    public function rejectRequest(int $requestId) 
+    {
+        $request = $this->requestManager->getRequestById($requestId);
+        if ($request) {
+            $request->setConnection($this->conn);
+            $request->reject();
+        }
+
         header("Location: index.php?action=showRequests");
         exit;
     }
 
-    public function completeRequest($requestId) {
-        $message = $this->requestManager->completeRequest((int)$requestId);
-        echo "<script>alert('". addslashes($message) ."'); window.location='index.php?action=showRequests';</script>";
+    public function completeRequest(int $requestId) 
+    {
+        $request = $this->requestManager->getRequestById($requestId);
+        if (!$request) return;
+
+        $request->setConnection($this->conn);
+
+        try {
+            // Check inventory
+            $result = mysqli_query($this->conn, "SELECT * FROM inventory LIMIT 1");
+            $inventory = mysqli_fetch_assoc($result);
+            $type = $request->getType();
+            $number = $request->getNumber();
+
+            $canFulfill = match($type) {
+                "Food"      => $inventory["food"] >= $number,
+                "Clothes"   => $inventory["clothes"] >= $number,
+                "Financial" => $inventory["money"] >= $number,
+                default     => false,
+            };
+
+            if (!$canFulfill) {
+                throw new Exception("Cannot complete request: insufficient inventory.");
+            }
+
+            // Deduct inventory
+            $field = match($type) {
+                "Food"      => "food",
+                "Clothes"   => "clothes",
+                "Financial" => "money",
+                default     => null,
+            };
+
+            if ($field) {
+                mysqli_query($this->conn, "UPDATE inventory SET $field = $field - $number WHERE id = 1");
+            }
+
+            // Complete the request (updates state in DB)
+            $request->complete();
+
+            // Notify observers
+            foreach ($this->requestManager->getObservers() as $observer) {
+                $observer->update($request->getBeneficiary()->getId(), $type, $number);
+            }
+
+            echo "<script>alert('Request completed successfully'); window.location='index.php?action=showRequests';</script>";
+        } catch (Exception $e) {
+            echo "<script>alert('". addslashes($e->getMessage()) ."'); window.location='index.php?action=showRequests';</script>";
+        }
+
         exit;
     }
 
     // ---------------------------- Distributions ----------------------------
-    public function showDistributions() {
+    public function showDistributions() 
+    {
         require_once 'models/Beneficiary/Distribution.php';
         require_once 'models/Beneficiary/BeneficiaryFeedback.php';
 
         $distributions = Distribution::getAll();
         $feedbacksList = BeneficiaryFeedback::getAll();
 
-        // Map feedbacks by request_id using object method
         $feedbacks = [];
         foreach ($feedbacksList as $f) {
             $feedbacks[$f->getRequestId()] = true;
@@ -133,29 +191,31 @@ class BeneficiaryController {
     }
 
     // ---------------------------- Reports ----------------------------
-    public function generateReport($reportType) {
-        $conn = Database::getInstance()->getConnection();
+    public function generateReport(string $reportType) 
+    {
         $context = new ReportContext($reportType);
-        $reportData = $context->generate($conn);
+        $reportData = $context->generate($this->conn);
         require 'views/Beneficiary/reportView.html';
     }
 
     // ---------------------------- Feedback ----------------------------
-    public function addFeedbackForm(int $requestId, int $beneficiaryId) {
+    public function addFeedbackForm(int $requestId, int $beneficiaryId) 
+    {
         require_once 'views/Beneficiary/addFeedback.html';
     }
 
-    public function addFeedback(array $data) {
-        $requestId     = isset($data['request_id']) ? (int)$data['request_id'] : 0;
-        $beneficiaryId = isset($data['beneficiary_id']) ? (int)$data['beneficiary_id'] : 0;
-        $rating        = isset($data['satisfaction_rating']) ? (int)$data['satisfaction_rating'] : null;
+    public function addFeedback(array $data) 
+    {
+        $requestId     = $data['request_id'] ?? 0;
+        $beneficiaryId = $data['beneficiary_id'] ?? 0;
+        $rating        = $data['satisfaction_rating'] ?? null;
         $notes         = $data['outcome_notes'] ?? null;
 
-        require_once 'models/beneficiary/BeneficiaryFeedback.php';
+        require_once 'models/Beneficiary/BeneficiaryFeedback.php';
 
         try {
             $feedback = new BeneficiaryFeedback($requestId, $beneficiaryId, $rating, $notes);
-            $feedback->insert(); // call object's insert method
+            $feedback->insert();
             header("Location: index.php?action=showFeedbacks");
             exit;
         } catch (Exception $e) {
@@ -163,15 +223,15 @@ class BeneficiaryController {
         }
     }
 
-    public function showFeedbacks() {
-        require_once 'models/beneficiary/BeneficiaryFeedback.php';
+    public function showFeedbacks() 
+    {
+        require_once 'models/Beneficiary/BeneficiaryFeedback.php';
 
         try {
-            $feedbacks = BeneficiaryFeedback::getAll(); // returns objects now
+            $feedbacks = BeneficiaryFeedback::getAll();
             require 'views/Beneficiary/showFeedbacks.html';
         } catch (Exception $e) {
             echo "❌ Failed to fetch feedbacks: " . $e->getMessage();
         }
     }
-
 }

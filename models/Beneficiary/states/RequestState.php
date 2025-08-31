@@ -1,5 +1,7 @@
 <?php
-interface RequestState {
+// ===================== Request State Interface =====================
+interface RequestState
+{
     public function approve(BeneficiaryRequest $request): void;
     public function reject(BeneficiaryRequest $request): void;
     public function complete(BeneficiaryRequest $request): void;

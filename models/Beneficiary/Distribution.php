@@ -1,5 +1,7 @@
 <?php
-class Distribution {
+
+class Distribution
+{
     public int $id;
     public int $requestId;
     public int $beneficiaryId;
@@ -17,15 +19,16 @@ class Distribution {
         string $requestType,
         string $beneficiaryName
     ) {
-        $this->id = $id;
-        $this->requestId = $requestId;
-        $this->beneficiaryId = $beneficiaryId;
-        $this->quantity = $quantity;
-        $this->distributedAt = $distributedAt;
-        $this->requestType = $requestType;
+        $this->id             = $id;
+        $this->requestId      = $requestId;
+        $this->beneficiaryId  = $beneficiaryId;
+        $this->quantity       = $quantity;
+        $this->distributedAt  = $distributedAt;
+        $this->requestType    = $requestType;
         $this->beneficiaryName = $beneficiaryName;
     }
 
+    // ===================== Getters =====================
     public function getId(): int { return $this->id; }
     public function getRequestId(): int { return $this->requestId; }
     public function getBeneficiaryId(): int { return $this->beneficiaryId; }
@@ -34,7 +37,9 @@ class Distribution {
     public function getRequestType(): string { return $this->requestType; }
     public function getBeneficiaryName(): string { return $this->beneficiaryName; }
 
-    public static function getAll(): array {
+    // ===================== Get All Distributions =====================
+    public static function getAll(): array
+    {
         $conn = Database::getInstance()->getConnection();
 
         $sql = "
@@ -53,7 +58,7 @@ class Distribution {
         ";
 
         $result = $conn->query($sql);
-        $items = [];
+        $items  = [];
 
         if ($result) {
             while ($row = $result->fetch_assoc()) {
@@ -72,3 +77,4 @@ class Distribution {
         return $items;
     }
 }
+?>
