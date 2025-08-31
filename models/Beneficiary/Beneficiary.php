@@ -1,6 +1,7 @@
 <?php
+require_once __DIR__ . '/../Event_Management/Observer/ObserverInterface.php';
 
-class Beneficiary
+class Beneficiary implements ObserverInterface
 {
     protected $id;
     protected $name;
@@ -87,6 +88,10 @@ class Beneficiary
         return $beneficiaries;
     }
 
-    
+    public function update($eventId, $payload) {
+    echo "Notification:\n";
+    echo "Event ID: $eventId\n";
+    echo "Payload: $payload\n\n";
+}
 }
 ?>
