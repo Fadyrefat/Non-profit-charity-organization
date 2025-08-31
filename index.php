@@ -31,6 +31,11 @@ if ($requestMethod === 'GET') {
             require_once 'controllers/DonationController.php';
             (new DonationController())->DonationForm();
             break;
+        case 'showDonors':
+             require_once 'controllers/DonationController.php';
+             $controller=new DonationController();
+             $controller->showDonors();
+             break;
 
         // ===== Volunteer Department =====
         case 'VolunteerDepartment':
