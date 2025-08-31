@@ -81,6 +81,9 @@ class Volunteer
     public function setState(VolunteerState $state): void
     {
         $this->state = $state;
+        if ($this->id > 0) {
+            $this->updateStateInDatabase();
+        }
     }
 
 
@@ -119,6 +122,9 @@ class Volunteer
                 $row['phone'],
                 (int) $row['hours']
             );
+
+            // Set the correct state based on database value
+            $volunteer->setState(self::createStateFromString($row['state'], $volunteer));
             $volunteers[] = $volunteer;
         }
 
@@ -136,13 +142,17 @@ class Volunteer
 
         $result = $stmt->get_result();
         if ($row = $result->fetch_assoc()) {
-            return new Volunteer(
+            $volunteer = new Volunteer(
                 (int) $row['id'],
                 $row['name'],
                 $row['email'],
                 $row['phone'],
                 (int) $row['hours']
             );
+
+            // Set the correct state based on database value
+            $volunteer->setState(self::createStateFromString($row['state'], $volunteer));
+            return $volunteer;
         }
 
         return null;
@@ -159,6 +169,19 @@ class Volunteer
 
         return $stmt->execute();
     }
+
+    public function updateStateInDatabase(): bool
+    {
+        require_once __DIR__ . '/../../config/Database.php';
+        $conn = Database::getInstance()->getConnection();
+
+        $stateName = $this->getStateName();
+        $stmt = $conn->prepare("UPDATE volunteers SET state = ? WHERE id = ?");
+        $stmt->bind_param("si", $stateName, $this->id);
+
+        return $stmt->execute();
+    }
+
 
     public static function delete(int $id): bool
     {
@@ -188,5 +211,23 @@ class Volunteer
         $result = $stmt->get_result();
 
         return $result->num_rows > 0;
+    }
+
+    private static function createStateFromString(string $stateName, Volunteer $volunteer): VolunteerState
+    {
+        switch ($stateName) {
+            case 'Helper':
+                return new HelperState($volunteer);
+            case 'Contributor':
+                return new ContributorState($volunteer);
+            case 'Supporter':
+                return new SupporterState($volunteer);
+            case 'Leader':
+                return new LeaderState($volunteer);
+            case 'Champion':
+                return new ChampionState($volunteer);
+            default:
+                return new HelperState($volunteer); // Default fallback
+        }
     }
 }
