@@ -6,18 +6,67 @@
   <style>
     body { font-family: Arial, sans-serif; background: #f4f7fa; text-align: center; padding: 50px; }
     h1 { margin-bottom: 30px; color: #333; }
-    .btn-container { display: grid; grid-template-columns: repeat(2, 200px); gap: 20px; justify-content: center; }
-    .btn { display: inline-block; padding: 15px 20px; font-size: 16px; color: #fff; background: #007BFF; border-radius: 8px; text-decoration: none; }
+    .btn-container { 
+      display: grid; 
+      grid-template-columns: repeat(3, 200px); /* updated to fit more buttons */
+      gap: 20px; 
+      justify-content: center; 
+      margin-bottom: 40px;
+    }
+    .btn { 
+      display: inline-block; 
+      padding: 15px 20px; 
+      font-size: 16px; 
+      color: #fff; 
+      background: #007BFF; 
+      border-radius: 8px; 
+      text-decoration: none; 
+    }
     .btn:hover { background: #0056b3; }
+    .report-box { margin-top: 20px; }
+    select { 
+      padding: 10px; 
+      font-size: 16px; 
+      border-radius: 6px; 
+      border: 1px solid #ccc; 
+      margin-right: 10px;
+    }
+    .btn-report { 
+      padding: 10px 15px; 
+      font-size: 16px; 
+      color: #fff; 
+      background: #28a745; 
+      border: none; 
+      border-radius: 6px; 
+      cursor: pointer;
+    }
+    .btn-report:hover { background: #1e7e34; }
   </style>
 </head>
 <body>
   <h1>Welcome to our Beneficiary Department</h1>
+  
   <div class="btn-container">
     <a href="index.php?action=addBeneficiary" class="btn">Add Beneficiary</a>
     <a href="index.php?action=showBeneficiaries" class="btn">Show Beneficiaries</a>
     <a href="index.php?action=addRequest" class="btn">Add Request</a>
     <a href="index.php?action=showRequests" class="btn">Show Requests</a>
+    <a href="index.php?action=showDistributions" class="btn">Show Distributions</a>
+    <a href="index.php?action=showFeedbacks" class="btn">Show Feedbacks</a> <!-- ✅ NEW BUTTON -->
   </div>
+
+  <!-- Report Selector -->
+  <div class="report-box">
+    <form method="GET" action="index.php">
+      <input type="hidden" name="action" value="generateReport">
+      <select name="reportType">
+        <option value="monthly">📅 Monthly Report</option>
+        <option value="satisfaction">😊 Satisfaction Report</option>
+        <option value="resource">📊 Resource Usage Report</option>
+      </select>
+      <button type="submit" class="btn-report">Generate Report</button>
+    </form>
+  </div>
+
 </body>
 </html>

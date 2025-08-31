@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Distributions List</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f7fa; padding: 30px; }
+    h2 { color: #333; text-align: center; margin-bottom: 20px; }
+    table { width: 100%; max-width: 1000px; margin: auto; border-collapse: collapse; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }
+    th, td { padding: 12px 15px; text-align: center; border-bottom: 1px solid #ddd; }
+    th { background: #007BFF; color: white; }
+    tr:hover { background: #f1f1f1; }
+    .actions { text-align: center; margin-top: 20px; }
+    .btn { display: inline-block; padding: 8px 12px; margin: 5px; background: #007BFF; color: white; text-decoration: none; border-radius: 5px; transition: background 0.3s; }
+    .btn:hover { background: #0056b3; }
+  </style>
+</head>
+<body>
+  <h2>Distributions List</h2>
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Beneficiary</th>
+      <th>Request Type</th>
+      <th>Quantity</th>
+      <th>Date</th>
+      <th>Actions</th>
+    </tr>
+    <?php if (!empty($distributions)): ?>
+      <?php foreach ($distributions as $d): ?>
+        <tr>
+          <td><?= htmlspecialchars($d['id']) ?></td>
+          <td><?= htmlspecialchars($d['beneficiary_name']) ?></td>
+          <td><?= htmlspecialchars($d['request_type']) ?></td>
+          <td><?= htmlspecialchars($d['quantity']) ?></td>
+          <td><?= htmlspecialchars($d['distributed_at']) ?></td>
+          <td>
+            <a href="index.php?action=addFeedback&request_id=<?= urlencode($d['request_id']) ?>&beneficiary_id=<?= urlencode($d['beneficiary_id']) ?>" class="btn">➕ Add Feedback</a>
+
+          </td>
+        </tr>
+      <?php endforeach; ?>
+    <?php else: ?>
+      <tr>
+        <td colspan="6">No distributions found.</td>
+      </tr>
+    <?php endif; ?>
+  </table>
+
+  <div class="actions">
+    <a href="index.php?action=BeneficiaryDepartment" class="btn">⬅ Back to Dashboard</a>
+  </div>
+</body>
+</html>

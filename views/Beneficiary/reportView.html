@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Generated Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f7fa; padding: 40px; }
+        h1 { color: #333; margin-bottom: 20px; }
+        table { border-collapse: collapse; width: 60%; margin: 20px auto; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        th, td { border: 1px solid #ccc; padding: 12px 15px; text-align: center; }
+        th { background: #007BFF; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .rating { font-size: 1.2rem; font-weight: bold; color: #007BFF; }
+        .back { display: inline-block; margin-top: 30px; padding: 10px 20px; background: #007BFF; color: white; border-radius: 6px; text-decoration: none; }
+        .back:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>Report Results</h1>
+
+    <?php if (!empty($reportData)): ?>
+        <?php 
+            // If satisfaction report (just one value)
+            if (isset($reportData['avg_rating'])): 
+        ?>
+            <p class="rating">Average Satisfaction Rating (last month): 
+                <?= number_format((float)$reportData['avg_rating'], 2) ?>
+            </p>
+
+        <?php else: ?>
+            <table>
+                <thead>
+                    <tr>
+                        <?php foreach (array_keys($reportData[0]) as $col): ?>
+                            <th><?= htmlspecialchars($col) ?></th>
+                        <?php endforeach; ?>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($reportData as $row): ?>
+                        <tr>
+                            <?php foreach ($row as $val): ?>
+                                <td><?= htmlspecialchars($val) ?></td>
+                            <?php endforeach; ?>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
+    <?php else: ?>
+        <p>No data found for this report.</p>
+    <?php endif; ?>
+
+    <a class="back" href="index.php?action=BeneficiaryDepartment">⬅ Back</a>
+</body>
+</html>

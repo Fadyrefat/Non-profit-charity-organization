@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beneficiary Feedbacks</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f7fa; padding: 30px; }
+    h2 { color: #333; text-align: center; margin-bottom: 20px; }
+    table { width: 100%; max-width: 900px; margin: auto; border-collapse: collapse; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }
+    th, td { padding: 12px 15px; text-align: center; border-bottom: 1px solid #ddd; }
+    th { background: #007BFF; color: white; }
+    tr:hover { background: #f1f1f1; }
+    .actions { text-align: center; margin-top: 20px; }
+    .btn { display: inline-block; padding: 10px 15px; margin: 5px; background: #007BFF; color: white; text-decoration: none; border-radius: 5px; transition: background 0.3s; }
+    .btn:hover { background: #0056b3; }
+  </style>
+</head>
+<body>
+  <h2>All Beneficiary Feedbacks</h2>
+
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Beneficiary</th>
+      <th>Request Type</th>
+      <th>Rating</th>
+      <th>Outcome Notes</th>
+      <th>Date</th>
+    </tr>
+
+    <?php if (!empty($feedbacks)): ?>
+      <?php foreach ($feedbacks as $f): ?>
+        <tr>
+          <td><?= htmlspecialchars($f['id']) ?></td>
+          <td><?= htmlspecialchars($f['beneficiary_name']) ?></td>
+          <td><?= htmlspecialchars($f['request_type']) ?></td>
+          <td><?= htmlspecialchars($f['satisfaction_rating'] ?? 'N/A') ?></td>
+          <td><?= htmlspecialchars($f['outcome_notes'] ?? '') ?></td>
+          <td><?= htmlspecialchars($f['reported_at']) ?></td>
+        </tr>
+      <?php endforeach; ?>
+    <?php else: ?>
+      <tr>
+        <td colspan="6">No feedbacks found.</td>
+      </tr>
+    <?php endif; ?>
+  </table>
+
+  <div class="actions">
+    <a href="index.php?action=BeneficiaryDepartment" class="btn">⬅ Back to Dashboard</a>
+  </div>
+</body>
+</html>

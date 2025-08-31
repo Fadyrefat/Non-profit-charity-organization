@@ -9,54 +9,51 @@ require_once __DIR__ . "/states/PendingState.php";
 
 class RequestManager {
     private mysqli $conn;
-    private array $pendingList = [];
-    private array $approvedList = [];
-    private array $rejectedList = [];
-    private array $completedList = [];
 
     public function __construct(mysqli $conn) {
         $this->conn = $conn;
     }
 
     // ========== Add a Request ==========
-    public function addRequest(BeneficiaryRequest $request, int $limit) {
-        // Check if number <= limit
-        if ($request->getNumber() <= $limit) {
-            $request->setState(new ApprovedState());
-            $this->approvedList[] = $request;
-        } else {
-            $request->setState(new RejectedState());
-            $this->rejectedList[] = $request;
-        }
+    public function addRequest(BeneficiaryRequest $request) {
+        // ✅ Always set state to Pending
+        $request->setState(new PendingState());
 
         // Insert request into DB
         $this->insertRequestToDB($request);
     }
 
+
     // ========== Insert Request into Database ==========
+// ========== Insert Request into Database ==========
     private function insertRequestToDB(BeneficiaryRequest $request) {
         $beneficiaryId = $request->getBeneficiary()->getId();
         $type = $request->getType();
         $number = $request->getNumber();
         $reason = $request->getReason();
-        $state = $request->getStatus();
+        $state = (new PendingState())->getName(); // ✅ Force Pending state
 
         // Check if beneficiary exists
         $result = $this->conn->query("SELECT id FROM beneficiaries WHERE id = $beneficiaryId");
         if (!$result || $result->num_rows === 0) {
-            throw new Exception("Cannot insert request: Beneficiary ID $beneficiaryId does not exist.");
+            echo "<script>alert('Cannot insert request: Beneficiary ID $beneficiaryId does not exist.');</script>";
+            return;
         }
 
         $stmt = $this->conn->prepare("
             INSERT INTO requests (beneficiary_id, request_type, number, reason, state)
             VALUES (?, ?, ?, ?, ?)
         ");
-        if (!$stmt) throw new Exception("Prepare failed: " . $this->conn->error);
+        if (!$stmt) {
+            echo "<script>alert('Prepare failed: " . $this->conn->error . "');</script>";
+            return;
+        }
 
         $stmt->bind_param("isiss", $beneficiaryId, $type, $number, $reason, $state);
 
         if (!$stmt->execute()) {
-            throw new Exception("Execute failed: " . $stmt->error);
+            echo "<script>alert('Execute failed: " . $stmt->error . "');</script>";
+            return;
         }
 
         return $stmt->insert_id;
@@ -65,20 +62,8 @@ class RequestManager {
 
 
 
-    // ========== Process Approved Requests ==========
-    public function processRequests() {
-        foreach ($this->approvedList as $key => $request) {
-            $type = $request->getType();
-            $number = $request->getNumber();
 
-            if ($this->canFulfill($type, $number)) {
-                $this->deductInventory($type, $number);
-                $request->setState(new CompletedState());
-                $this->completedList[] = $request;
-                unset($this->approvedList[$key]);
-            }
-        }
-    }
+
 
     // ----------------------------
     // Request State Updates
@@ -117,10 +102,99 @@ class RequestManager {
         exit;
     }
 
+    // ----------------------------
+    // Complete a Request
+    // ----------------------------
+    private array $observers = []; // ✅ Observers list
+
+    // ✅ Attach an observer
+    public function attach(Observer $observer) {
+        $this->observers[] = $observer;
+    }
+
+    // ✅ Notify all observers
+    private function notifyObservers(int $requestId, string $type, int $number) {
+        foreach ($this->observers as $observer) {
+            $observer->update($requestId, $type, $number);
+        }
+    }
+    public function completeRequest(int $requestId): string {
+        if ($requestId <= 0) {
+            return "Invalid request ID: $requestId";
+        }
+
+        // Fetch request info
+        $stmt = $this->conn->prepare("
+            SELECT id, request_type, number, state
+            FROM requests
+            WHERE id = ?
+            LIMIT 1
+        ");
+        $stmt->bind_param("i", $requestId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $requestData = $result->fetch_assoc();
+        $stmt->close();
+
+        if (!$requestData) {
+            return "Request not found with ID $requestId";
+        }
+
+        if ($requestData['state'] !== 'Approved') {
+            return "Only approved requests can be completed. Current state: {$requestData['state']}";
+        }
+
+        $type = $requestData['request_type'];
+        $number = (int)$requestData['number'];
+
+        // Check inventory
+        if (!$this->canFulfill($type, $number)) {
+            return "Cannot complete request: insufficient inventory for $type.";
+        }
+
+        // Deduct inventory
+        $this->deductInventory($type, $number);
+
+        // Update request state to Completed
+        $updateStmt = $this->conn->prepare("UPDATE requests SET state = ? WHERE id = ?");
+        $state = (new CompletedState())->getName();
+        $updateStmt->bind_param("si", $state, $requestId);
+        $updateStmt->execute();
+        $updateStmt->close();
+
+        // ✅ Notify ImpactTracker
+        $this->notifyObservers($requestId, $type, $number);
+
+        return "Request ID $requestId has been completed successfully.";
+    }
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+    // ========== Process Approved Requests ==========
+    public function processRequests() {
+        foreach ($this->approvedList as $key => $request) {
+            $type = $request->getType();
+            $number = $request->getNumber();
+
+            if ($this->canFulfill($type, $number)) {
+                $this->deductInventory($type, $number);
+                $request->setState(new CompletedState());
+                $this->completedList[] = $request;
+                unset($this->approvedList[$key]);
+            }
+        }
+    }
 
     // ========== Check inventory ==========
     private function canFulfill(string $type, int $number): bool {
@@ -145,9 +219,6 @@ class RequestManager {
         }
     }
 
-    // ========== Getters for lists ==========
-    public function getPendingRequests(): array { return $this->pendingList; }
-    public function getApprovedRequests(): array { return $this->approvedList; }
-    public function getRejectedRequests(): array { return $this->rejectedList; }
-    public function getCompletedRequests(): array { return $this->completedList; }
+
+
 }
