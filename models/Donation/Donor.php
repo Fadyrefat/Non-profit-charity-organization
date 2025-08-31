@@ -1,61 +1,73 @@
 <?php
-class Donor {
+class Donor
+{
     private $id;
     private $name;
     private $email;
     private $phone;
 
-    public function __construct($id = null, $name = "", $email = "", $phone = "") {
-        $this->id    = $id;
-        $this->name  = $name;
+    public function __construct($id = null, $name = "", $email = "", $phone = "")
+    {
+        $this->id = $id;
+        $this->name = $name;
         $this->email = $email;
         $this->phone = $phone;
     }
 
     // Getters
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
-    public function getEmail() {
+    public function getEmail()
+    {
         return $this->email;
     }
-    public function getPhone() {
+    public function getPhone()
+    {
         return $this->phone;
     }
 
     // Setters
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
     }
-    public function setEmail($email) {
+    public function setEmail($email)
+    {
         $this->email = $email;
     }
-    public function setPhone($phone) {
+    public function setPhone($phone)
+    {
         $this->phone = $phone;
     }
 
-    public static function create($name, $email, $phone) {
-    $conn = Database::getInstance()->getConnection();
-    $sql = "INSERT INTO donors (name, email, phone) VALUES ('$name', '$email', $phone)";
-    return mysqli_query($conn, $sql);
+    public static function create($name, $email, $phone)
+    {
+        $conn = Database::getInstance()->getConnection();
+        $sql = "INSERT INTO donors (name, email, phone) VALUES ('$name', '$email', $phone)";
+        return mysqli_query($conn, $sql);
     }
 
-public static function getDonors() {
-    $conn = Database::getInstance()->getConnection();
-    $sql = "SELECT * FROM donors";
-    $result = mysqli_query($conn, $sql);
+    public static function getDonors()
+    {
+        $conn = Database::getInstance()->getConnection();
+        $sql = "SELECT * FROM donors";
+        $result = mysqli_query($conn, $sql);
 
-    $donors = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-        $donors[] = new Donor($row['id'],$row['name'],$row['email'],$row['phone']);
+        $donors = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $donors[] = new Donor($row['id'], $row['name'], $row['email'], $row['phone']);
+        }
+        return $donors;
     }
-    return $donors;
-}
 
-    public static function getDonorByID($id): ?Donor {
+    public static function getDonorByID($id): ?Donor
+    {
         $conn = Database::getInstance()->getConnection();
         $sql = "SELECT * FROM donors WHERE id = $id LIMIT 1";
         $result = mysqli_query($conn, $sql);
@@ -67,4 +79,18 @@ public static function getDonors() {
         return null; // return null if donor not found
     }
 
-} 
+    public static function update($id, $name, $email, $phone)
+    {
+        $conn = Database::getInstance()->getConnection();
+        $sql = "UPDATE donors SET name = '$name', email = '$email', phone = '$phone' WHERE id = $id";
+        return mysqli_query($conn, $sql);
+    }
+
+    public static function delete($id)
+    {
+        $conn = Database::getInstance()->getConnection();
+        $sql = "DELETE FROM donors WHERE id = $id";
+        return mysqli_query($conn, $sql);
+    }
+
+}

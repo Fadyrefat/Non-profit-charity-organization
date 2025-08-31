@@ -32,6 +32,21 @@ if ($requestMethod === 'GET') {
             (new DonationController())->DonationForm();
             break;
 
+        case 'showDonors':
+            require_once 'controllers/DonationController.php';
+            (new DonationController())->showDonors();
+            break;
+
+        case 'editDonor':
+            require_once 'controllers/DonationController.php';
+            (new DonationController())->editDonor($_GET['id']);
+            break;
+
+        case 'deleteDonor':
+            require_once 'controllers/DonationController.php';
+            (new DonationController())->deleteDonor($_GET['id']);
+            break;
+
         // ===== Volunteer Department =====
         case 'VolunteerDepartment':
             require_once 'controllers/VolunteerController.php';
@@ -87,22 +102,41 @@ if ($requestMethod === 'GET') {
         case 'approveRequest':
             if (isset($_GET['id'])) {
                 require_once "controllers/BeneficiaryController.php";
-                (new BeneficiaryController())->approveRequest((int)$_GET['id']);
+                (new BeneficiaryController())->approveRequest((int) $_GET['id']);
             }
             break;
 
         case 'rejectRequest':
             if (isset($_GET['id'])) {
                 require_once "controllers/BeneficiaryController.php";
-                (new BeneficiaryController())->rejectRequest((int)$_GET['id']);
+                (new BeneficiaryController())->rejectRequest((int) $_GET['id']);
             }
             break;
 
         case 'completeRequest':
             if (isset($_GET['id'])) {
                 require_once "controllers/BeneficiaryController.php";
-                (new BeneficiaryController())->completeRequest((int)$_GET['id']);
+                (new BeneficiaryController())->completeRequest((int) $_GET['id']);
             }
+            break;
+
+        //Event Management
+        case 'EventDepartment':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->index();
+            break;
+
+        case 'createEvent':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->create();
+            break;
+
+        case 'showEvent':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->show($_GET['id']);
             break;
 
         default:
@@ -121,6 +155,11 @@ elseif ($requestMethod === 'POST') {
         case 'addDonation':
             require_once 'controllers/DonationController.php';
             (new DonationController())->addDonation($_POST);
+            break;
+
+        case 'updateDonor':
+            require_once 'controllers/DonationController.php';
+            (new DonationController())->updateDonor($_POST);
             break;
 
         case 'addVolunteer':
@@ -142,6 +181,37 @@ elseif ($requestMethod === 'POST') {
         case 'addRequest':
             require_once 'controllers/BeneficiaryController.php';
             (new BeneficiaryController())->addRequest($_POST);
+            break;
+
+        // Event Management
+        case 'storeEvent':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->store($_POST);
+            break;
+
+        case 'registerAttendee':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->register($_POST);
+            break;
+
+        case 'bookTicket':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->bookTicket($_POST);
+            break;
+
+        case 'updateAttendance':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->updateAttendance($_POST);
+            break;
+
+        case 'sendReminder':
+            require_once 'controllers/EventController.php';
+            $controller = new EventController();
+            $controller->sendReminder($_POST);
             break;
 
         default:

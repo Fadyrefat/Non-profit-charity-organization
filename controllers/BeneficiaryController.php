@@ -1,11 +1,13 @@
 <?php
 
-class BeneficiaryController {
+class BeneficiaryController
+{
 
     private mysqli $conn;
     private RequestManager $requestManager;
 
-    public function __construct() {
+    public function __construct()
+    {
         // ✅ Initialize DB connection once
         $this->conn = Database::getInstance()->getConnection();
 
@@ -32,19 +34,22 @@ class BeneficiaryController {
     // ----------------------------
     // Department index page
     // ----------------------------
-    public function Index() {
+    public function Index()
+    {
         require_once 'views/Beneficiary/index.html';
     }
 
     // ----------------------------
     // Beneficiary CRUD
     // ----------------------------
-    public function addForm() {
+    public function addForm()
+    {
         require_once 'views/Beneficiary/addBeneficiary.html';
     }
 
-    public function addBeneficiary($data) {
-        $name    = $data['name'] ?? null;
+    public function addBeneficiary($data)
+    {
+        $name = $data['name'] ?? null;
         $address = $data['address'] ?? null;
 
         if (!$name || !$address) {
@@ -59,7 +64,8 @@ class BeneficiaryController {
         exit;
     }
 
-    public function showAll() {
+    public function showAll()
+    {
         $result = $this->conn->query("SELECT * FROM beneficiaries ORDER BY id DESC");
 
         $beneficiaries = [];
@@ -73,16 +79,18 @@ class BeneficiaryController {
     // ----------------------------
     // Beneficiary Requests
     // ----------------------------
-    public function addRequestForm() {
+    public function addRequestForm()
+    {
         $beneficiaries = Beneficiary::getBeneficiaries();
         require_once 'views/Beneficiary/addRequest.html';
     }
 
-    public function addRequest($data) {
-        $type          = $data['request_type'] ?? '';
-        $number        = isset($data['number']) ? (int)$data['number'] : 0;
-        $reason        = $data['reason'] ?? '';
-        $beneficiaryId = isset($data['beneficiary_id']) ? (int)$data['beneficiary_id'] : 0;
+    public function addRequest($data)
+    {
+        $type = $data['request_type'] ?? '';
+        $number = isset($data['number']) ? (int) $data['number'] : 0;
+        $reason = $data['reason'] ?? '';
+        $beneficiaryId = isset($data['beneficiary_id']) ? (int) $data['beneficiary_id'] : 0;
 
         if ($beneficiaryId <= 0) {
             throw new Exception("Please select a valid beneficiary. ID: $beneficiaryId");
@@ -104,7 +112,8 @@ class BeneficiaryController {
         exit;
     }
 
-    public function showRequests() {
+    public function showRequests()
+    {
         $result = $this->conn->query("
             SELECT r.id, b.name AS beneficiary_name, r.request_type, r.number, r.reason, r.state, r.created_at
             FROM requests r
@@ -123,9 +132,11 @@ class BeneficiaryController {
     // ----------------------------
     // Approve / Reject Requests
     // ----------------------------
-    public function approveRequest($requestId) {
-        $requestId = (int)$requestId;
-        if ($requestId <= 0) throw new Exception("Invalid request ID: $requestId");
+    public function approveRequest($requestId)
+    {
+        $requestId = (int) $requestId;
+        if ($requestId <= 0)
+            throw new Exception("Invalid request ID: $requestId");
 
         $this->requestManager->approveRequest($requestId);
 
@@ -133,11 +144,25 @@ class BeneficiaryController {
         exit;
     }
 
-    public function rejectRequest($requestId) {
-        $requestId = (int)$requestId;
-        if ($requestId <= 0) throw new Exception("Invalid request ID: $requestId");
+    public function rejectRequest($requestId)
+    {
+        $requestId = (int) $requestId;
+        if ($requestId <= 0)
+            throw new Exception("Invalid request ID: $requestId");
 
         $this->requestManager->rejectRequest($requestId);
+
+        header("Location: index.php?action=showRequests");
+        exit;
+    }
+
+    public function completeRequest($requestId)
+    {
+        $requestId = (int) $requestId;
+        if ($requestId <= 0)
+            throw new Exception("Invalid request ID: $requestId");
+
+        $this->requestManager->completeRequest($requestId);
 
         header("Location: index.php?action=showRequests");
         exit;
