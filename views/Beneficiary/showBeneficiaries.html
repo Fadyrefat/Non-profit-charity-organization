@@ -29,11 +29,11 @@
     <?php if (!empty($beneficiaries)): ?>
       <?php foreach ($beneficiaries as $b): ?>
         <tr>
-          <td><?= htmlspecialchars($b->getId()) ?></td>
-          <td><?= htmlspecialchars($b->getName()) ?></td>
-          <td><?= htmlspecialchars($b->getEmail()) ?></td>
-          <td><?= htmlspecialchars($b->getPhone()) ?></td>
-          <td><?= htmlspecialchars($b->getAddress()) ?></td>
+          <td><?= htmlspecialchars($b['id']) ?></td>
+          <td><?= htmlspecialchars($b['name']) ?></td>
+          <td><?= htmlspecialchars($b['email']) ?></td>
+          <td><?= htmlspecialchars($b['phone']) ?></td>
+          <td><?= htmlspecialchars($b['address']) ?></td>
         </tr>
       <?php endforeach; ?>
     <?php else: ?>

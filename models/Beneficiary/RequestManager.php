@@ -59,33 +59,27 @@ class RequestManager {
         return $stmt->insert_id;
     }
 
-    public function getAllRequests(string $state = 'All'): array
+    public static function getAll(string $state = 'All'): array
     {
+        $conn = Database::getInstance()->getConnection();
         $sql = "
             SELECT r.id, b.name AS beneficiary_name, r.request_type, r.number, r.reason, r.state, r.created_at
             FROM requests r
             JOIN beneficiaries b ON r.beneficiary_id = b.id
         ";
 
-        $requests = [];
-
         if ($state !== 'All') {
-            $stmt = $this->conn->prepare($sql . " WHERE r.state = ?");
+            $stmt = $conn->prepare($sql . " WHERE r.state = ?");
             $stmt->bind_param("s", $state);
             $stmt->execute();
             $result = $stmt->get_result();
         } else {
-            $result = $this->conn->query($sql);
+            $result = $conn->query($sql);
         }
 
-        while ($row = $result->fetch_assoc()) {
-            $requests[] = $row;
-        }
-
-        return $requests;
+        $items = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        return $items;
     }
-
-
 
 
 

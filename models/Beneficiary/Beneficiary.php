@@ -108,23 +108,14 @@ class Beneficiary
     }
 
     // ===== Get all Beneficiaries =====
-    public static function getBeneficiaries(): array
+    public static function getAll(): array
     {
         $conn = Database::getInstance()->getConnection();
         $sql = "SELECT * FROM beneficiaries ORDER BY id DESC";
-        $result = mysqli_query($conn, $sql);
+        $result = $conn->query($sql);
 
-        $beneficiaries = [];
-        while ($row = mysqli_fetch_assoc($result)) {
-            $beneficiaries[] = new Beneficiary(
-                $row['name'],
-                $row['email'],
-                $row['phone'],
-                $row['address'] ?? '',
-                $row['id']
-            );
-        }
-        return $beneficiaries;
+        $items = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        return $items;
     }
 
 }

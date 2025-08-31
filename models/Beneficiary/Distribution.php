@@ -18,8 +18,8 @@ class Distribution {
         return $stmt->execute();
     }
 
-    // Fetch all distributions
-    public static function getDistributions(): array {
+    public static function getAll(): array
+    {
         $conn = Database::getInstance()->getConnection();
         $sql = "
             SELECT 
@@ -36,6 +36,8 @@ class Distribution {
             ORDER BY d.distributed_at DESC
         ";
         $result = $conn->query($sql);
-        return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+
+        $items = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        return $items;
     }
 }

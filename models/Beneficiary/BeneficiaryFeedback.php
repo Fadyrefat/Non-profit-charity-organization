@@ -76,41 +76,25 @@ class BeneficiaryFeedback
         $stmt->close();
     }
 
-    // ===== Fetch all feedbacks =====
-    public static function getAll()
+
+    // Beneficiary Feedback
+    public static function getAll(): array
     {
         $conn = Database::getInstance()->getConnection();
-
         $sql = "
             SELECT f.id, f.request_id, f.beneficiary_id, f.satisfaction_rating, f.outcome_notes, f.reported_at,
-                   r.request_type, b.name AS beneficiary_name
+                r.request_type, b.name AS beneficiary_name
             FROM beneficiaryFeedback f
             JOIN requests r ON f.request_id = r.id
             JOIN beneficiaries b ON f.beneficiary_id = b.id
             ORDER BY f.reported_at DESC
         ";
-
         $result = $conn->query($sql);
-        if (!$result) {
-            throw new Exception("Query failed: " . $conn->error);
-        }
 
-        $feedbacks = [];
-        while ($row = $result->fetch_assoc()) {
-            $feedbacks[] = new BeneficiaryFeedback(
-                $row['request_id'],
-                $row['beneficiary_id'],
-                $row['satisfaction_rating'],
-                $row['outcome_notes'],
-                $row['id'],
-                $row['reported_at'],
-                $row['request_type'],
-                $row['beneficiary_name']
-            );
-        }
-
-        return $feedbacks;
+        $items = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        return $items;
     }
+
 
     // ===== Fetch feedback by request_id =====
     public static function getByRequestId($request_id)

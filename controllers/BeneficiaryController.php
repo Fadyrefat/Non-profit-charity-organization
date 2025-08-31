@@ -20,6 +20,7 @@ class BeneficiaryController {
         require_once 'models/Beneficiary/ReportContext.php';
         require_once 'models/Beneficiary/RequestManager.php';
         require_once 'models/Beneficiary/observers/ImpactTrackerObserver.php';
+
         $this->requestManager = new RequestManager($this->conn);
         $this->requestManager->attach(new ImpactTrackerObserver($this->conn));
     }
@@ -53,15 +54,14 @@ class BeneficiaryController {
     }
 
     public function showAll() {
-        // Use the model's method to get all beneficiaries
-        $beneficiaries = Beneficiary::getBeneficiaries();
+        // Unified getAll
+        $beneficiaries = Beneficiary::getAll();
         require_once 'views/Beneficiary/showBeneficiaries.html';
     }
 
-
     // ---------------------------- Beneficiary Requests ----------------------------
     public function addRequestForm() {
-        $beneficiaries = Beneficiary::getBeneficiaries();
+        $beneficiaries = Beneficiary::getAll();
         require_once 'views/Beneficiary/addRequest.html';
     }
 
@@ -73,7 +73,14 @@ class BeneficiaryController {
 
         if ($beneficiaryId <= 0) throw new Exception("Invalid beneficiary ID");
 
-        $beneficiary = Beneficiary::getById($beneficiaryId);
+        $beneficiaries = Beneficiary::getAll();
+        $beneficiary = null;
+        foreach ($beneficiaries as $b) {
+            if ($b['id'] == $beneficiaryId) {
+                $beneficiary = $b;
+                break;
+            }
+        }
         if (!$beneficiary) throw new Exception("Beneficiary not found");
 
         $request = RequestFactory::createRequest($beneficiary, $type, $number, $reason);
@@ -83,12 +90,12 @@ class BeneficiaryController {
         header("Location: index.php?action=showRequests");
         exit;
     }
+
     public function showRequests() {
         $stateFilter = $_GET['state'] ?? 'All';
-        $requests = $this->requestManager->getAllRequests($stateFilter);
+        $requests = $this->requestManager->getAll($stateFilter);
         require_once 'views/Beneficiary/showRequests.html';
     }
-
 
     // ---------------------------- Approve / Reject / Complete ----------------------------
     public function approveRequest($requestId) {
@@ -109,24 +116,22 @@ class BeneficiaryController {
         exit;
     }
 
+    // ---------------------------- Distributions ----------------------------
     public function showDistributions() {
         require_once 'models/Beneficiary/Distribution.php';
         require_once 'models/Beneficiary/BeneficiaryFeedback.php';
 
-        // Fetch all distributions
-        $distributions = Distribution::getDistributions();
-
-        // Fetch all feedbacks and map by request_id for quick lookup
+        $distributions = Distribution::getAll();
         $feedbacksList = BeneficiaryFeedback::getAll();
+
+        // Map feedbacks by request_id
         $feedbacks = [];
         foreach ($feedbacksList as $f) {
-            $feedbacks[$f->getRequestId()] = true; // mark requests that already have feedback
+            $feedbacks[$f['request_id']] = true;
         }
 
         require 'views/Beneficiary/showDistributions.html';
     }
-
-
 
     // ---------------------------- Reports ----------------------------
     public function generateReport($reportType) {
@@ -147,11 +152,17 @@ class BeneficiaryController {
         $rating        = isset($data['satisfaction_rating']) ? (int)$data['satisfaction_rating'] : null;
         $notes         = $data['outcome_notes'] ?? null;
 
+        $feedback = [
+            'request_id' => $requestId,
+            'beneficiary_id' => $beneficiaryId,
+            'satisfaction_rating' => $rating,
+            'outcome_notes' => $notes
+        ];
+
         require_once 'models/beneficiary/BeneficiaryFeedback.php';
 
         try {
-            $feedback = new BeneficiaryFeedback($requestId, $beneficiaryId, $rating, $notes);
-            $feedback->insert(); // call the model's insert method
+            BeneficiaryFeedback::insert($feedback);
             header("Location: index.php?action=showFeedbacks");
             exit;
         } catch (Exception $e) {
@@ -159,12 +170,11 @@ class BeneficiaryController {
         }
     }
 
-
     public function showFeedbacks() {
         require_once 'models/beneficiary/BeneficiaryFeedback.php';
 
         try {
-            $feedbacks = BeneficiaryFeedback::getAll(); // get all feedbacks from model
+            $feedbacks = BeneficiaryFeedback::getAll();
             require 'views/Beneficiary/showFeedbacks.html';
         } catch (Exception $e) {
             echo "❌ Failed to fetch feedbacks: " . $e->getMessage();
