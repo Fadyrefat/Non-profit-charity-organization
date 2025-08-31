@@ -1,18 +1,17 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require_once __DIR__ . '/../../config/Database.php';
 
-class Attendee
-{
+class Attendee {
     private $conn;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->conn = Database::getInstance()->getConnection();
     }
 
     // Register attendee (link to donor/volunteer/beneficiary)
-    public function register($eventId, $userType, $userId, $ticketType, $reminderMethods = null)
-    {
+    public function register($eventId, $userType, $userId, $ticketType, $reminderMethods = null) {
         $stmt = $this->conn->prepare("
             INSERT INTO attendees (event_id, user_type, user_id, ticket_type, reminder_methods)
             VALUES (?, ?, ?, ?, ?)
@@ -22,8 +21,7 @@ class Attendee
     }
 
     // Get all attendees for an event
-    public function getByEvent($eventId)
-    {
+    public function getByEvent($eventId) {
         $stmt = $this->conn->prepare("
             SELECT a.*, 
                    CASE a.user_type
@@ -51,8 +49,7 @@ class Attendee
     }
 
     // Update check-in
-    public function updateAttendance($attendeeId, $checkedIn)
-    {
+    public function updateAttendance($attendeeId, $checkedIn) {
         $stmt = $this->conn->prepare("
             UPDATE attendees SET checked_in = ? WHERE id = ?
         ");
@@ -61,8 +58,7 @@ class Attendee
     }
 
     // Get reminder methods for attendees of an event
-    public function getReminderMethods($eventId)
-    {
+    public function getReminderMethods($eventId) {
         $stmt = $this->conn->prepare("
             SELECT a.*, 
                    CASE a.user_type
