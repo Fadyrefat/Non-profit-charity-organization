@@ -1,6 +1,8 @@
 <?php
 require_once 'config/Database.php';
 require_once 'CharityFacade.php';
+require_once 'LoggingProxy.php';
+require_once 'common/DatabaseLogger.php';
 // 🔄 Setup database if needed
 $conn = Database::getInstance()->getConnection();
 require_once __DIR__ . '/config/init_db.php';
@@ -16,5 +18,5 @@ if ($requestMethod === 'GET') {
 } elseif ($requestMethod === 'POST') {
     $data = $_POST;
 }
-$facade = new CharityFacade();
-$facade->handleRequest($action, $requestMethod, $data);
+$proxy = new LoggingProxy();
+$proxy->handleRequest($action, $requestMethod, $data);

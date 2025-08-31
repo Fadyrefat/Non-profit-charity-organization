@@ -1,7 +1,7 @@
 <?php
 require_once 'common/FacadeInterface.php';
 require_once 'common/DatabaseLogger.php';
-require_once 'facade.php';
+require_once 'CharityFacade.php';
 
 class LoggingProxy implements FacadeInterface
 {
