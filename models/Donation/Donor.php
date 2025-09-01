@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../../common/observer.php';
-class Donor implements Observer{
+require_once __DIR__ . '/../Event_Management/Observer/ObserverInterface.php';
+class Donor implements ObserverInterface{
     private $id;
     private $name;
     private $email;
@@ -68,8 +68,10 @@ public static function getDonors() {
         return null; 
     }
 
-    public function update(): void{
-        
-    }
+public function update($eventId, $payload) {
+    echo "Notification:\n";
+    echo "Event ID: $eventId\n";
+    echo "Payload: $payload\n\n";
+}
 
 } 
