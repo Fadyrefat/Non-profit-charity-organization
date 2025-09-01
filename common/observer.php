@@ -1,7 +1,7 @@
-<?php
+// <?php
 
-interface Observer
-{
-    public function update(): void;
-}
+// interface Observer
+// {
+//     public function update(): void;
+// }
 
