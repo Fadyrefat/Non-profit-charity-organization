@@ -5,27 +5,40 @@ require_once 'Observer/ObserverInterface.php';
 class Event {
     private $conn;
     private $observers = [];
+    private static $instance = null;
+
 
     public function __construct() {
         $this->conn = Database::getInstance()->getConnection();
     }
 
-    public function subscribe($observer) {
+    public static function getInstance() {
+        if (self::$instance === null) {
+            self::$instance = new Event();
+        }
+        return self::$instance;
+    }
+
+    public function subscribe(ObserverInterface $observer) {
+
         $this->observers[] = $observer;
+
+    }
+
+    public function unsubscribe(ObserverInterface $observer) {
+        $this->observers = array_filter($this->observers, function($o) use ($observer) {
+            return $o !== $observer;
+        });
     }
 
     public function clearObservers() {
         $this->observers = [];
     }
 
-    public function notify($eventData, $payload) {
+    public function notify($eventId, $payload) {
         foreach ($this->observers as $observer) {
-            $observer->update($eventData, $payload);
+            $observer->update($eventId, $payload);
         }
-    }
-
-    public function unsubscribe(ObserverInterface $observer) {
-        $this->observers = array_filter($this->observers, fn($o) => $o !== $observer);
     }
 
 
@@ -61,5 +74,3 @@ class Event {
         return $result->fetch_assoc();
     }
 }
-
-
