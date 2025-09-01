@@ -1,7 +1,7 @@
 <?php
-    require_once 'models/donation/DonationFactory.php';
-    require_once 'models/donation/DonationDecorators/ReceiptDecorator.php';
-    require_once 'models/donation/DonationDecorators/AckDecorator.php';
+    require_once 'models/Donation/DonationFactory.php';
+    require_once 'models/Donation/DonationDecorators/ReceiptDecorator.php';
+    require_once 'models/Donation/DonationDecorators/AckDecorator.php';
     require_once __DIR__ . '/../models/Inventory.php';
 class DonationController {
 
