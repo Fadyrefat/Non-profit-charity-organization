@@ -6,9 +6,9 @@ require_once __DIR__ . '/states/ContributorState.php';
 require_once __DIR__ . '/states/SupporterState.php';
 require_once __DIR__ . '/states/LeaderState.php';
 require_once __DIR__ . '/states/ChampionState.php';
-require_once __DIR__ . '../../models/Event_Management/Observer.php';
+require_once __DIR__ . '/../Event_Management/Observer/ObserverInterface.php';
 
-class Volunteer #implements Observer
+class Volunteer implements ObserverInterface
 {
     private int $id;
     private string $name;
@@ -236,4 +236,11 @@ class Volunteer #implements Observer
                 return new HelperState($volunteer); // Default fallback
         }
     }
+    
+ public function update($eventId, $payload) {
+    echo "Notification:\n";
+    echo "Event ID: $eventId\n";
+    echo "Payload: $payload\n\n";
+}
+    
 }
